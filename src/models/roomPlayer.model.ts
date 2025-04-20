@@ -1,4 +1,6 @@
-import { Table, Model, Column, DataType, PrimaryKey, Default} from "sequelize-typescript";
+import { Table, Model, Column, DataType, PrimaryKey, ForeignKey } from "sequelize-typescript";
+import { Room } from "./room.model";
+import { User } from "./user.model";
 
 
 @Table({
@@ -8,9 +10,30 @@ import { Table, Model, Column, DataType, PrimaryKey, Default} from "sequelize-ty
 
 export class RoomPlayer extends Model<RoomPlayer> {
   @PrimaryKey
-  @Default(DataType.UUIDV4)
+  @ForeignKey(() => Room)
   @Column({
     type: DataType.UUID
   })
-  id!: string
+  roomId!: string
+  
+  @PrimaryKey
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false
+  })
+  userId!: string
+
+  @Column({
+    type: DataType.INTEGER,
+    defaultValue: 0,
+    allowNull: false
+  })
+  score!: number
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false
+  })
+  isReady!: boolean
 }
