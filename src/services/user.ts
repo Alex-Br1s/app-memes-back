@@ -27,9 +27,8 @@ export const registerUser = async (data: UserRegister): Promise<Omit<UserInterfa
 
     return userWithoutPassword
   } catch (error) {
-    console.error("Error al registrar usuario:", (error as any).message);
-    console.error("Stack:", error);
-    throw error;
+    (error as Error).name = (error as Error).name || 'AuthRegisterError'
+    throw error
   }
 };
 

@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 
 const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
+  
   JsonWebTokenError: (res: Response): void => {
     res.status(401).json({ error: "Token missing or invalid" });
   },
@@ -34,10 +35,14 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
   },
 
   defaultError: (res: Response, error: Error): void => {
-    console.error(error.name);
+    console.error('Unhandled error:', error.name);
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+  
+    res.status(500).json({
+      error: error.message || "Internal server error",
+    });
   },
+  
 };
 
 export const handlerError = (

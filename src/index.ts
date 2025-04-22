@@ -15,7 +15,6 @@ const PORT =  process.env.PORT || 3001
 //* Middlewares
 app.use(express.json())
 app.use(cors())
-app.use(handlerError) //* Middleware para manejar errores
 
 //* Conexión a la db
 void connectionDB()
@@ -23,6 +22,8 @@ void connectionDB()
 //* Rutas
 const api = '/server'
 app.use(api, userRoutes)
+
+app.use(handlerError) //* Middleware para manejar errores
 
 app.listen(PORT, () => {
   console.log('Server listening on port', PORT);
