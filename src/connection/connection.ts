@@ -1,46 +1,38 @@
-import { Sequelize } from 'sequelize-typescript'
-import dotenv from 'dotenv'
-import { User } from '../models/user.model'
-import { Room } from '../models/room.model'
-import { Meme } from '../models/meme.model'
-import { Prompt } from '../models/prompt.model'
-import { RoomPlayer } from '../models/roomPlayer.model'
-import { Round } from '../models/round.model'
-import { Template } from '../models/template.model'
-import { initializeAssociations } from '../models/associations'
+import { Sequelize } from "sequelize-typescript";
+import dotenv from "dotenv";
+import { User } from "../models/user.model";
+import { Room } from "../models/room.model";
+import { Meme } from "../models/meme.model";
+import { Prompt } from "../models/prompt.model";
+import { RoomPlayer } from "../models/roomPlayer.model";
+import { Round } from "../models/round.model";
+import { Template } from "../models/template.model";
+import { initializeAssociations } from "../models/associations";
 
-dotenv.config()
+dotenv.config();
 
 export const connection = new Sequelize({
-  dialect: 'postgres',
-  host: process.env.DATABASE_HOST ?? 'localhost',
+  dialect: "postgres",
+  host: process.env.DATABASE_HOST ?? "localhost",
   username: process.env.DATABASE_USERNAME,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
   logging: false,
-  models: [
-    User,
-    Room,
-    Meme,
-    Prompt,
-    RoomPlayer,
-    Round,
-    Template
-  ]
-})
+  models: [User, Room, Meme, Prompt, RoomPlayer, Round, Template],
+});
 
-initializeAssociations()
+initializeAssociations();
 
-async function connectionDB (): Promise<void> {
+async function connectionDB(): Promise<void> {
   try {
-    await connection.authenticate()
+    await connection.authenticate();
     //* console.log('🔥 Conectado a PostgreSQL correctamente')
 
-    await connection.sync()
+    await connection.sync({ alter: true });
     //* console.log('📦 Modelos sincronizados con la base de datos')
   } catch (error) {
-    console.error('❌ Error al conectar con la base de datos:', error)
+    console.error("❌ Error al conectar con la base de datos:", error);
   }
 }
 
-export default connectionDB
+export default connectionDB;

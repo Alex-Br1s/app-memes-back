@@ -1,16 +1,15 @@
 import { Router } from "express";
-import { handleGetUserById, /* handleLoginUser */ } from "../handlers/user";
+import { handleGetUserById, handleRegisterUser } from "../handlers/user";
+import { authenticateToken } from "../middlewares/authenticateToken";
 
-const userRoutes= Router()
+const userRoutes = Router();
 
+userRoutes.post("/sign-up", (req, res, next) => {
+  handleRegisterUser(req, res, next).catch(next);
+});
 
-/* userRoutes.post('user/log-in', (req, res, next) => {
-  handleLoginUser(req, res, next). catch(next)
-})
- */
-userRoutes.get('user/:id', (req, res, next) => {
-  handleGetUserById(req, res, next).catch(next)
-})
+userRoutes.get("user/:id", authenticateToken, (req, res, next) => {
+  handleGetUserById(req, res, next).catch(next);
+});
 
-
-export default userRoutes
+export default userRoutes;
