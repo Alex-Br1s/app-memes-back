@@ -28,7 +28,7 @@ async function connectionDB(): Promise<void> {
     await connection.authenticate();
     //* console.log('🔥 Conectado a PostgreSQL correctamente')
 
-    await connection.sync({ alter: true });
+    await connection.sync(/* { alter: true } */);
     //* console.log('📦 Modelos sincronizados con la base de datos')
   } catch (error) {
     console.error("❌ Error al conectar con la base de datos:", error);

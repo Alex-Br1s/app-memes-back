@@ -23,7 +23,7 @@ void connectionDB()
 const api = '/server'
 app.use(api, userRoutes)
 
-app.use(handlerError) //* Middleware para manejar errores
+app.use(handlerError) //* Middleware para manejar errores, tiene que ir debajo de todas las rutas
 
 app.listen(PORT, () => {
   console.log('Server listening on port', PORT);
