@@ -8,6 +8,7 @@ import { RoomPlayer } from "../models/roomPlayer.model";
 import { Round } from "../models/round.model";
 import { Template } from "../models/template.model";
 import { initializeAssociations } from "../models/associations";
+import { SavedMeme } from "../models/savedMeme";
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ export const connection = new Sequelize({
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
   logging: false,
-  models: [User, Room, Meme, Prompt, RoomPlayer, Round, Template],
+  models: [User, Room, Meme, Prompt, RoomPlayer, Round, Template, SavedMeme],
 });
 
 initializeAssociations();

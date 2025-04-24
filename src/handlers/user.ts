@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { getUserById, loginUser, registerUser, updateUser, /* loginUser */ } from "../services/user";
+import { registerUser, loginUser, getUserById, updateUser, /* profileSummary, */} from "../services/user";
 import { sendResponse } from "../utils/sendResponse";
 import { UserToken } from "../types/types";
 
@@ -57,3 +57,22 @@ export const handleUpdateUser = async (req: Request, res: Response, next: NextFu
     next(error)
   }
 }
+
+
+//? Advances handlers
+/* 
+export const handleProfileSummary = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = req.params.id || (req.user as UserToken).id
+    console.log('Id que llega', userId);
+    const userSummary = await profileSummary(userId)
+    sendResponse({
+      res,
+      message: 'Resumen del usuario obtenido con éxito',
+      data: userSummary
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+ */

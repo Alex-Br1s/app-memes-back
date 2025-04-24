@@ -3,17 +3,17 @@ declare module "express-serve-static-core" {
     user?: UserToken;
   }
 }
+//? USER INTERFACES/TYPES
 export interface UserInterface {
   id: string;
   userName: string;
   email: string;
   isPremium: boolean;
   avatar?: string;
-  password: string; // No debería mandar al front
+  password: string;
 }
 
 export type UserToken = Omit<UserInterface, "password">;
-
 export interface LoginResponse {
   user: UserToken;
   token: string;
@@ -22,12 +22,18 @@ export interface LoginResponse {
 type UserRegister = Omit<UserInterface, "id" | "avatar" | "isPremium">;
 
 type UserLogin = Omit<UserInterface, "id" | "avatar" | "userName" | "isPremium">;
-
 export interface UserUpdate {
   userName: string;
   avatar?: string;
 }
 
-/* export interface UserLogin {
+//? MEME INTERFACES/TYPES
 
-} */
+export interface MemeInterface {
+  id: string;
+  roundId: string;
+  userId: string;
+  imageUrl: string;
+  texts: string[];
+  votes: number;
+}

@@ -7,6 +7,7 @@ import { Round } from "./round.model";
 import { Prompt } from "./prompt.model";
 import { Meme } from "./meme.model";
 import { Template } from "./template.model";
+import { SavedMeme } from "./savedMeme";
 
 export const initializeAssociations = () => {
   // 1. Un User puede crear muchas Rooms, una Room tiene un admin que es un User
@@ -38,6 +39,10 @@ export const initializeAssociations = () => {
   // 6. Un User puede subir Templates personalizados (opcional)
   User.hasMany(Template, { foreignKey: "createdBy" });
   Template.belongsTo(User, { foreignKey: "createdBy" });
+
+  // 6. Un User puede guardar muchos memes y un memes puede ser guardado por muchos usuarios
+  User.belongsToMany(Meme, { through: SavedMeme, foreignKey: 'userId'});
+  Meme.belongsToMany(User, { through: SavedMeme, foreignKey: 'memeId'});
 };
 
 /*

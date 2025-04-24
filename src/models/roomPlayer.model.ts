@@ -36,4 +36,22 @@ export class RoomPlayer extends Model<RoomPlayer> {
     defaultValue: false
   })
   isReady!: boolean
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false
+  })
+  isWinner!: boolean;
+
+  @Column({ 
+    type: DataType.DATE, 
+    allowNull: true 
+  })
+  joinedAt!: Date;
+
+  @Column({ 
+    type: DataType.DATE, 
+    allowNull: true 
+  })
+  leftAt!: Date;
 }

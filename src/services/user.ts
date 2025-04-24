@@ -119,3 +119,15 @@ export const updateUser = async (userId: string, userData: UserUpdate): Promise<
     throw error
   }
 }
+
+
+
+//? Advances services
+/* export const profileSummary = async (userId: string): Promise<any> => {
+  try {
+    const user = await User.findByPk(userId)
+    console.log(user);
+  } catch (error) {
+    
+  }
+} */
