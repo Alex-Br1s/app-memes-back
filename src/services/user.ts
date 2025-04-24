@@ -1,4 +1,4 @@
-import { CreationAttributes } from "sequelize";
+import { CreationAttributes, Op } from "sequelize";
 import { User } from "../models/user.model";
 import { LoginResponse, UserInterface, UserLogin, /* UserLogin ,*/ UserRegister, UserToken, UserUpdate } from "../types/types";
 import bcrypt from "bcrypt";
@@ -7,27 +7,32 @@ import jwt from "jsonwebtoken";
 const secretKey = process.env.JWT_SECRET
 if (!secretKey) throw new Error('JWT_SECRET no está definida en las variables de entorno')
 
-export const registerUser = async (data: UserRegister): Promise<UserToken> => {
+export const registerUser = async (userData: UserRegister): Promise<UserToken> => {
   try {
-    const userExists = await User.findOne({ where: { email: data.email }});
+    const userExists = await User.findOne({ where: { email: userData.email }});
     if (userExists) {
       const error = new Error()
       error.name = 'AuthRegisterError'
       throw error
     }
 
-    const userNameExists = await User.findOne({ where: {userName: data.userName }})
+    const userNameExists = await User.findOne({ 
+      where: {
+        userName: {
+          [Op.iLike]: userData.userName
+        }
+      }})
     if (userNameExists) {
       const error = new Error()
       error.name = 'AuthRegisterErrorNameAlreadyExists'
       throw error
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10)
+    const hashedPassword = await bcrypt.hash(userData.password, 10)
 
     const newUser: UserRegister = {
-      userName: data.userName,
-      email: data.email,
+      userName: userData.userName,
+      email: userData.email,
       password: hashedPassword,
     }
 
@@ -42,16 +47,16 @@ export const registerUser = async (data: UserRegister): Promise<UserToken> => {
   }
 };
 
-export const loginUser = async (data: UserLogin): Promise<LoginResponse> => {
+export const loginUser = async (userData: UserLogin): Promise<LoginResponse> => {
   try {
-    const verifyUser = await User.findOne({ where: { email: data.email }})
+    const verifyUser = await User.findOne({ where: { email: userData.email }})
     if (!verifyUser) {
       const error = new Error()
       error.name = 'AuthLoginError'
       throw error
     }
 
-    const verifyPassword = await bcrypt.compare(data.password, verifyUser.password)
+    const verifyPassword = await bcrypt.compare(userData.password, verifyUser.password)
     if (!verifyPassword){
       const error = new Error()
       error.name = 'AuthLoginError'
@@ -71,9 +76,9 @@ export const loginUser = async (data: UserLogin): Promise<LoginResponse> => {
   }
 }
 
-export const getUserById = async (id: string): Promise<UserInterface | null> => {
+export const getUserById = async (userId: string): Promise<UserInterface | null> => {
   try {
-    const user = await User.findByPk(id);
+    const user = await User.findByPk(userId);
     if (!user) {
       const error = new Error()
       error.name = 'UserNotFoundError'
@@ -94,6 +99,18 @@ export const updateUser = async (userId: string, userData: UserUpdate): Promise<
       error.name = 'UserNotFoundError'
       throw error
     }
+    const userNameExists = await User.findOne({ 
+      where: {
+        userName: {
+          [Op.iLike]: userData.userName
+        }
+      }})
+    if (userNameExists && userNameExists.id !== userId) {
+      const error = new Error()
+      error.name = 'AuthRegisterErrorNameAlreadyExists'
+      throw error
+    }
+
     const updatedUser = (await userToUpdate.update(userData)).get({ plain: true })
     const { password:_, ...userWithoutPassword } = updatedUser
     return userWithoutPassword
