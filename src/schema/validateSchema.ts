@@ -30,11 +30,11 @@ export const updateUserSchema = z.object({
 })
 
 
+
 //? Schema para validar los datos de un meme
-
-
 export const createMemeSchema = z.object({
   texts: z.array( z.string().max(50, "Cada texto del meme debe tener como máximo 50 caracteres"))
     .max(5, "No se permiten más de 5 textos")
     .optional(), // hace que el campo texts sea opcional
+  imageUrl: z.string().url("La url de la imagen no es válida")
 });

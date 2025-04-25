@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { registerUser, loginUser, getUserById, updateUser, /* profileSummary, */} from "../services/user";
+import { registerUser, loginUser, getUserById, updateUser, /* profileSummary, */} from "../services/userService";
 import { sendResponse } from "../utils/sendResponse";
 import { UserToken } from "../types/types";
 

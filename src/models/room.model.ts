@@ -28,7 +28,7 @@ export class Room extends Model<Room> {
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
-    defaultValue: false
+    defaultValue: true
   })
   isPublic!: boolean
 
@@ -59,7 +59,7 @@ export class Room extends Model<Room> {
 
   @Column({
     type: DataType.STRING,
-    defaultValue: 'voting' // podría ser 'prompt', 'voting', 'editing', 'finished', etc.
+    defaultValue: 'waiting' // por defecto la sala se cera en 1:'waiting', 'prompt': IA, 'editing', 'voting', 'finished', etc.
   })
   phase!: string;
 

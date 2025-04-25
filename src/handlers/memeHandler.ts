@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../utils/sendResponse";
-import { createMeme, getAllMemes } from "../services/memes";
+import { createMeme, getAllMemes } from "../services/memeService";
 
 
 

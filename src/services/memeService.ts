@@ -1,10 +1,32 @@
 import { CreationAttributes } from "sequelize"
 import { Meme } from "../models/meme.model"
 import { MemeCreate, MemeInterface, MemeResponse } from "../types/types"
+import { Round } from "../models/round.model"
 
 
 export const createMeme = async ({imageUrl, texts, roundId, userId}: MemeCreate): Promise<MemeInterface> => {
   try {
+    const round = await Round.findByPk(roundId)
+
+    if (!round) {
+      const error = new Error()
+      error.name = "RoundNotFound"
+      throw error
+    }
+
+    if (round.status !== 'editing') {
+      const error = new Error()
+      error.name = "RoundNotEditing"
+      throw error
+    }
+
+    const memeExist = await Meme.findOne({ where: {userId, roundId} })
+    if (memeExist) {
+      const error = new Error()
+      error.name = "MemeAlreadyExists"
+      throw error
+    }
+
     const newMeme = {
       imageUrl: imageUrl,
       texts: texts || [],

@@ -21,7 +21,10 @@ export interface LoginResponse {
 
 type UserRegister = Omit<UserInterface, "id" | "avatar" | "isPremium">;
 
-type UserLogin = Omit<UserInterface, "id" | "avatar" | "userName" | "isPremium">;
+type UserLogin = Omit<
+  UserInterface,
+  "id" | "avatar" | "userName" | "isPremium"
+>;
 export interface UserUpdate {
   userName: string;
   avatar?: string;
@@ -50,4 +53,30 @@ export interface MemeCreate {
   texts: string[];
   userId: string;
   roundId: string;
+}
+
+//? ROOM INTERFACES/TYPES
+export interface RoomInterface {
+  id: string;
+  adminId: string;
+  roomName: string;
+  roomCode?: string;
+  isPublic: boolean;
+  isSpecialRoom: boolean;
+  rounds: number;
+  roundDuration: number;
+  phase: string;
+  showUsernames: boolean;
+  selectionMode: string;
+}
+export interface CreateRoomInterface {
+  userId: string;
+  roomName: string;
+  roomCode?: string;
+  isPublic: boolean;
+  isSpecialRoom: boolean;
+  rounds: number;
+  roundDuration: number;
+  showUsernames: boolean;
+  selectionMode: string;
 }

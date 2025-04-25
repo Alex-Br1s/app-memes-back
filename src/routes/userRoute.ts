@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleGetUserById, handleLoginUser, /* handleProfileSummary, */ handleRegisterUser, handleUpdateUser } from "../handlers/user";
+import { handleGetUserById, handleLoginUser, /* handleProfileSummary, */ handleRegisterUser, handleUpdateUser } from "../handlers/userHandler";
 import { authenticateToken } from "../middlewares/authenticateToken";
 import { validateLogin, validateRegister, validateUserData } from "../middlewares/validateData";
 
