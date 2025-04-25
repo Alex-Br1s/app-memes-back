@@ -37,3 +37,17 @@ export interface MemeInterface {
   texts: string[];
   votes: number;
 }
+
+export interface MemeResponse {
+  memes: MemeInterface[];
+  totalPages: number;
+  totalItems: number;
+  currentPage: number;
+}
+
+export interface MemeCreate {
+  imageUrl: string;
+  texts: string[];
+  userId: string;
+  roundId: string;
+}

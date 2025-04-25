@@ -1,16 +1,47 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../utils/sendResponse";
-import { getAllMemes } from "../services/memes";
+import { createMeme, getAllMemes } from "../services/memes";
 
 
 
-export const handleGetAllMemes = async (_: Request, res: Response, next: NextFunction): Promise<void> => {
+export const handleCreateMeme = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const memes = await getAllMemes()
+    const { imageUrl, texts } = req.body
+    const roundId = req.params.roundId
+    const userId = req.user?.id
+    if (!userId) {
+      const error = new Error()
+      error.name = 'UserNotFoundError'
+      throw error
+    }
+
+    const response = await createMeme({ imageUrl, texts, roundId, userId })
+    sendResponse({
+      res,
+      message: 'Meme creado con éxito',
+      data: response,
+      statusCode: 201
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+export const handleGetAllMemes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const page = req.query.page as string || '1'
+    const { memes, totalItems, totalPages, currentPage } = await getAllMemes(page);
     sendResponse({
       res,
       message: 'Memes encontrados con éxito',
-      data: memes
+      data: {
+        memes,
+        totalItems,
+        totalPages,
+        currentPage
+      }
     })
   } catch (error) {
     next(error)

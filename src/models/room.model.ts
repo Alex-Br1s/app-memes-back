@@ -44,6 +44,7 @@ export class Room extends Model<Room> {
     defaultValue: false
   })
   isSpecialRoom!:boolean
+  
   @Column({
     type: DataType.INTEGER,
     defaultValue: 6

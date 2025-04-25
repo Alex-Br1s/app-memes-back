@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 
 const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
-  
+  //* Errores de autenticación
   JsonWebTokenError: (res: Response): void => {
     res.status(401).json({
       "success": false,
@@ -38,6 +38,7 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
     res.status(401).json({ error: "Incorrect email or password" });
   },
 
+  //* Errores de usuario
   UserNotFoundError: (res: Response): void => {
     res.status(404).json({
       success: false,
@@ -52,8 +53,17 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
     res.status(404).json({ error: "Users not found" });
   }, */
 
-  DisabledUsersNotFound: (res: Response): void => {
+  /* DisabledUsersNotFound: (res: Response): void => {
     res.status(404).json({ error: "Disabled users not found" });
+  }, */
+
+  //* Errores de memes
+  MemesNotFound: (res: Response): void => {
+    res.status(404).json({ error: "Memes not found" });
+  },
+
+  MemeNotCreated: (res: Response): void => {
+    res.status(404).json({ error: "Meme not created" });
   },
 
   defaultError: (res: Response, error: Error): void => {
