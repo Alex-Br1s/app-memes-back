@@ -1,4 +1,4 @@
-import { CreationAttributes } from "sequelize";
+import { CreationAttributes, Op } from "sequelize";
 import { Room } from "../models/room.model";
 import { CreateRoomInterface, RoomInterface } from "../types/types";
 
@@ -12,6 +12,21 @@ export const createRoom = async ({ userId, roomName, roomCode, isPublic, isSpeci
       error.name = "RoomNameAlreadyExists"
       throw error
     }
+
+    const roomExistByUser = await Room.findOne({ 
+      where: {
+        adminId: userId, 
+        phase: { 
+          [Op.not] : 'finished'//? No permitir volver a crear si aun el estado de phase (fase) no es finished, esto permite volver a crear una sala sin "eliminar la sala"
+        }
+      } 
+    })
+    if (roomExistByUser) {
+      const error = new Error()
+      error.name = "RoomAlreadyExistsByUser"
+      throw error
+    }
+
     const newRoom = {
       adminId: userId,
       roomName,
@@ -35,4 +50,4 @@ export const createRoom = async ({ userId, roomName, roomCode, isPublic, isSpeci
     (error as Error).name = (error as Error).name || 'RoomNotCreated'
     throw error
   }
-}
+} 

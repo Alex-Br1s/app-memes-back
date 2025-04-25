@@ -71,13 +71,23 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
   },
 
 
-  //* Errores de salas y rondas
+  //* Errores de rondas
   RoundNotFound: (res: Response): void => {
     res.status(404).json({ error: "Round not found" });
   },
 
   RoundNotEditing: (res: Response): void => {
     res.status(404).json({ error: "The room is not in editing" });
+  },
+
+
+  //* Errores de salas
+  RoomNameAlreadyExists: (res: Response): void => {
+    res.status(409).json({ error: "Room name already exists" });
+  },
+
+  RoomAlreadyExistsByUser: (res: Response): void => {
+    res.status(409).json({ error: "Room already exists by user" });
   },
 
   defaultError: (res: Response, error: Error): void => {

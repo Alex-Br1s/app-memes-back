@@ -71,7 +71,7 @@ export class Room extends Model<Room> {
 
   @Column({
     type: DataType.STRING,
-    defaultValue: 'vote' // 'vote' o 'random' (modo de selección del prompt ganador)
+    defaultValue: 'vote' // 'vote' o 'random' (modo de selección del prompt ganador) IA
   })
   selectionMode!: string;
 }
