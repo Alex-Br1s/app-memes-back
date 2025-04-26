@@ -82,6 +82,15 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
 
 
   //* Errores de salas
+
+  RoomNotFound: (res: Response): void => {
+    res.status(404).json({ error: "Room not found" });
+  },
+
+  RoomNotCreated: (res: Response): void => {
+    res.status(404).json({ error: "Room not created" });
+  },
+
   RoomNameAlreadyExists: (res: Response): void => {
     res.status(409).json({ error: "Room name already exists" });
   },
@@ -89,6 +98,7 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
   RoomAlreadyExistsByUser: (res: Response): void => {
     res.status(409).json({ error: "Room already exists by user" });
   },
+
 
   defaultError: (res: Response, error: Error): void => {
     console.error('Unhandled error:', error.name);

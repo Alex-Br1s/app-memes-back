@@ -56,6 +56,7 @@ export interface MemeCreate {
 }
 
 //? ROOM INTERFACES/TYPES
+
 export interface RoomInterface {
   id: string;
   adminId: string;
@@ -70,7 +71,7 @@ export interface RoomInterface {
   selectionMode: string;
 }
 export interface CreateRoomInterface {
-  userId: string;
+  adminId: string;
   roomName: string;
   roomCode?: string;
   isPublic: boolean;
@@ -79,4 +80,13 @@ export interface CreateRoomInterface {
   roundDuration: number;
   showUsernames: boolean;
   selectionMode: string;
+}
+
+export interface RoomWithAdminInterface extends RoomInterface {
+  roomAdmin: {
+    id: string
+    userName: string
+    avatar: string | null
+    isPremium: boolean
+  }
 }

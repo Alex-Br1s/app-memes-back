@@ -1,10 +1,10 @@
 import { CreationAttributes, Op } from "sequelize";
 import { Room } from "../models/room.model";
-import { CreateRoomInterface, RoomInterface } from "../types/types";
+import { CreateRoomInterface, RoomWithAdminInterface } from "../types/types";
+import { User } from "../models/user.model";
 
 
-
-export const createRoom = async ({ userId, roomName, roomCode, isPublic, isSpecialRoom, rounds, roundDuration, showUsernames, selectionMode }: CreateRoomInterface): Promise<RoomInterface> => {
+export const createRoom = async ({ adminId, roomName, roomCode, isPublic, isSpecialRoom, rounds, roundDuration, showUsernames, selectionMode }: CreateRoomInterface): Promise<RoomWithAdminInterface> => {
   try {
     const roomExist = await Room.findOne({ where: { roomName } });
     if (roomExist) {
@@ -15,9 +15,9 @@ export const createRoom = async ({ userId, roomName, roomCode, isPublic, isSpeci
 
     const roomExistByUser = await Room.findOne({ 
       where: {
-        adminId: userId, 
+        adminId, 
         phase: { 
-          [Op.not] : 'finished'//? No permitir volver a crear si aun el estado de phase (fase) no es finished, esto permite volver a crear una sala sin "eliminar la sala"
+          [Op.not] : 'finished' //? No permitir volver a crear si aun el estado de phase (fase) no es finished, esto permite volver a crear una sala sin "eliminar la sala"
         }
       } 
     })
@@ -28,7 +28,7 @@ export const createRoom = async ({ userId, roomName, roomCode, isPublic, isSpeci
     }
 
     const newRoom = {
-      adminId: userId,
+      adminId,
       roomName,
       roomCode,
       isPublic,
@@ -39,15 +39,37 @@ export const createRoom = async ({ userId, roomName, roomCode, isPublic, isSpeci
       showUsernames,
       selectionMode
     }
+
     const room = await Room.create(newRoom as CreationAttributes<Room>)
+
     if (!room) {
       const error = new Error()
       error.name = "RoomNotCreated"
       throw error
     }
-    return room
+
+    //* obtenemos la sala con la información del admin
+    const roomWithAdmin = await Room.findOne({
+      where: { id: room.id },
+      include: [
+        {
+          model: User, 
+          as: 'roomAdmin', 
+          attributes: ['id', 'userName', 'avatar', 'isPremium']
+        }
+      ]
+    });
+
+    if (!roomWithAdmin) {
+      const error = new Error()
+      error.name = "RoomNotFound"
+      throw error
+    }
+
+    return roomWithAdmin as unknown as RoomWithAdminInterface;
+
   } catch (error) {
     (error as Error).name = (error as Error).name || 'RoomNotCreated'
     throw error
   }
-} 
+}

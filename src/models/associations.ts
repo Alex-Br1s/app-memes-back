@@ -12,7 +12,7 @@ import { SavedMeme } from "./savedMeme";
 export const initializeAssociations = () => {
   // 1. Un User puede crear muchas Rooms, una Room tiene un admin que es un User
   User.hasMany(Room, { foreignKey: "adminId" });
-  Room.belongsTo(User, { foreignKey: "adminId" });
+  Room.belongsTo(User, { foreignKey: "adminId", as: "roomAdmin" });
 
   // 2. Relación muchos a muchos entre Users y Rooms (quiénes están en qué sala)
   Room.belongsToMany(User, { through: RoomPlayer, foreignKey: "roomId" });
