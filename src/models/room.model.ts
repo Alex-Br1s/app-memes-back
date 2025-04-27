@@ -21,9 +21,10 @@ export class Room extends Model<Room> {
   roomName!: string
 
   @Column({
-    type: DataType.STRING
+    type: DataType.INTEGER,
+    allowNull: true
   })
-  roomCode?: string
+  roomCode?: number | null //? Si la sala es privada, se le asigna un código de sala, si no es privada, no se le asigna
 
   @Column({
     type: DataType.BOOLEAN,

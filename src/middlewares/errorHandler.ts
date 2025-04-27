@@ -34,6 +34,13 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
     });
   },
 
+  AuthRegisterErrorPasswordNotMatch: (res: Response): void => {
+    res.status(404).json({
+      error: "The passwords do not match",
+      statusCode: 404
+    });
+  },
+
   AuthLoginError: (res: Response): void => {
     res.status(401).json({ error: "Incorrect email or password" });
   },
@@ -108,11 +115,15 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
   },
 
   RoomCodeNotValid: (res: Response): void => {
-    res.status(409).json({ error: "Room code not valid or undefined" });
+    res.status(409).json({ error: "Room code not valid or incorrect" });
   },
 
   RoomCodeRequired: (res: Response): void => {
     res.status(409).json({ error: "Room code required"})
+  },
+  
+  RoomCodeNotAllowedInPublicRoom: (res: Response): void => {
+    res.status(409).json({ error: "Room code not allowed in public room" })
   },
 
   defaultError: (res: Response, error: Error): void => {

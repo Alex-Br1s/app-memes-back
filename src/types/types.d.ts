@@ -20,12 +20,19 @@ export interface LoginResponse {
   refreshToken: string;
 }
 
-type UserRegister = Omit<UserInterface, "id" | "avatar" | "isPremium">;
+export interface LoginDataEntry {
+  userName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
-type UserLogin = Omit<
-  UserInterface,
-  "id" | "avatar" | "userName" | "isPremium"
->;
+export type SaveSessionDataInDb = Omit<LoginDataEntry, "confirmPassword">
+export interface UserLogin {
+  email: string;
+  password: string;
+}
+
 export interface UserUpdate {
   userName: string;
   avatar?: string;
@@ -62,7 +69,7 @@ export interface RoomInterface {
   id: string;
   adminId: string;
   roomName: string;
-  roomCode?: string;
+  roomCode?: number;
   isPublic: boolean;
   isSpecialRoom: boolean;
   rounds: number;
@@ -74,7 +81,7 @@ export interface RoomInterface {
 export interface CreateRoomInterface {
   adminId: string;
   roomName: string;
-  roomCode?: string;
+  roomCode?: number;
   isPublic: boolean;
   isSpecialRoom: boolean;
   rounds: number;
@@ -95,5 +102,5 @@ export interface RoomWithAdminInterface extends RoomInterface {
 export interface JoinRoom {
   userId: string;
   roomId: string;
-  roomCode: string;
+  roomCode: number;
 }

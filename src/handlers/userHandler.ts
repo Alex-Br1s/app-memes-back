@@ -5,8 +5,8 @@ import { UserToken } from "../types/types";
 
 export const handleRegisterUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    console.log(req.body);
-    const response = await registerUser(req.body)
+    const { userName, email, password, confirmPassword } = req.body
+    const response = await registerUser({ userName, email, password, confirmPassword })
     sendResponse({
       res, 
       message: 'Usuario registrado con éxito', 
@@ -19,7 +19,8 @@ export const handleRegisterUser = async (req: Request, res: Response, next: Next
 
 export const handleLoginUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { user, accessToken, refreshToken } = await loginUser(req.body)
+    const { email, password } = req.body
+    const { user, accessToken, refreshToken } = await loginUser({ email, password })
     
     // Guarda el refreshToken en una cookie segura
     res.cookie('refreshToken', refreshToken, {

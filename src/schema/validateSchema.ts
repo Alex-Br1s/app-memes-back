@@ -2,15 +2,33 @@ import { z } from "zod"
 
 //? Schema para validar los datos de registro y login de un usuario
 export const registerSchema = z.object({
-  userName: z.string().min(3, "El nombre debe tener al menos 3 caracteres").max(25, "El nombre no puede tener más de 25 caracteres"),
-  email: z.string().email("El correo no es válido"),
-  password: z.string()
+  userName: z.string({
+    required_error: "El nombre es obligatorio",
+  })
+  .min(3, "El nombre debe tener al menos 3 caracteres")
+  .max(25, "El nombre no puede tener más de 25 caracteres"),
+  
+  email: z.string({
+    required_error: "El correo es obligatorio",
+  })
+  .email("El correo no es válido"),
+
+  password: z.string({
+    required_error: "La contraseña es obligatoria",
+  })
   .min(8, "La contraseña debe tener al menos 8 caracteres")
   .regex(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$/,
     "La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo"
-  )
+  ),
 
+  confirmPassword: z.string({
+    required_error: "La confirmación de contraseña es obligatoria",
+  })
+  .min(8, "La contraseña debe tener al menos 8 caracteres")
+  .regex( /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$/,
+    "La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo"
+  )
 })
 
 export const loginSchema = z.object({
@@ -38,3 +56,57 @@ export const createMemeSchema = z.object({
     .optional(), // hace que el campo texts sea opcional
   imageUrl: z.string().url("La url de la imagen no es válida")
 });
+
+
+//? Schema para validar los datos de una sala
+export const createRoomSchema = z.object({
+  roomName: z.string()
+    .min(3, "El nombre de la sala debe tener al menos 3 caracteres")
+    .max(25, "El nombre de la sala no puede tener más de 25 caracteres"),
+
+  roomCode: z.number()
+    .min(1000, "El código de la sala debe tener 4 números")
+    .max(9999, "El código de la sala no puede tener más de 4 números")
+    .optional(),
+
+  isPublic: z.boolean().default(true),
+
+  isSpecialRoom: z.boolean().default(false),
+
+  rounds: z.number()
+    .min(3, "El número de rondas debe ser al menos 3")
+    .max(10, "El número de rondas no puede tener más de 10"),
+
+  roundDuration: z.number().default(60),
+
+  showUsernames: z.boolean().default(true),
+
+  selectionMode: z.enum(["famousMemes", "memesIA"]).default("famousMemes"),
+
+}).refine(data => {
+  // Si la sala es pública (isPublic === true), no debe haber roomCode
+  if (data.isPublic && data.roomCode !== undefined) {
+    return false;
+  }
+  // Si la sala es privada (isPublic === false), debe haber roomCode
+  if (!data.isPublic && data.roomCode === undefined) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Si la sala es pública, no debe tener un código. Si la sala es privada, debe tener un código.",
+  path: ["roomCode"], // Se aplica sobre el campo 'roomCode'
+});
+
+/* 
+{
+	"roomName": "tercera room", 
+	"roomCode": "", 
+	"isPublic": false, 
+	"isSpecialRoom": false, 
+	"rounds": 8, 
+	"roundDuration": 90, 
+	"showUsernames": false,
+	"selectionMode": ""
+}
+*/

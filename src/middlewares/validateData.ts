@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { createMemeSchema, loginSchema, registerSchema, updateUserSchema } from "../schema/validateSchema";
+import { createMemeSchema, createRoomSchema, loginSchema, registerSchema, updateUserSchema } from "../schema/validateSchema";
 
 //* Validar datos de registro y login
 export const validateRegister = (req: Request, res: Response, next: NextFunction): void => {
@@ -52,3 +52,18 @@ export const validateMemeData = (req: Request, res: Response, next: NextFunction
     });
   }
 }
+
+
+//* Validar datos de salas
+export const validateRoomData = (req: Request, res: Response, next: NextFunction): void => {
+  try {
+    createRoomSchema.parse(req.body);
+    next()
+  } catch (error: any) {
+    res.status(400).json({
+      error: "Error al crear la sala",
+      details: error.errors.map((e: any) => e.message),
+    });
+  }
+}
+

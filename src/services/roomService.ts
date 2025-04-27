@@ -28,12 +28,7 @@ export const createRoom = async ({ adminId, roomName, roomCode, isPublic, isSpec
       throw error
     }
 
-    if (isPublic === false && !roomCode) {
-      const error = new Error()
-      error.name = "RoomCodeRequired"
-      throw error
-    }
-
+    
     const newRoom = {
       adminId,
       roomName,

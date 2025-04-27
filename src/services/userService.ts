@@ -1,6 +1,6 @@
 import { CreationAttributes, Op } from "sequelize";
 import { User } from "../models/user.model";
-import { LoginResponse, UserInterface, UserLogin, /* UserLogin ,*/ UserRegister, UserToken, UserUpdate } from "../types/types";
+import { LoginDataEntry, LoginResponse, SaveSessionDataInDb, UserInterface, UserLogin, UserToken, UserUpdate } from "../types/types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -9,9 +9,9 @@ if (!accessToken) throw new Error('JWT_SECRET no está definida en las variables
 const refreshToken = process.env.JWT_REFRESH_TOKEN
 if (!refreshToken) throw new Error('JWT_REFRESH no está definida en las variables de entorno')
 
-export const registerUser = async (userData: UserRegister): Promise<UserToken> => {
+export const registerUser = async ({ userName, email, password: plainPassword, confirmPassword }: LoginDataEntry): Promise<UserToken> => {
   try {
-    const userExists = await User.findOne({ where: { email: userData.email }});
+    const userExists = await User.findOne({ where: { email: email }});
     if (userExists) {
       const error = new Error()
       error.name = 'AuthRegisterError'
@@ -21,7 +21,7 @@ export const registerUser = async (userData: UserRegister): Promise<UserToken> =
     const userNameExists = await User.findOne({ 
       where: {
         userName: {
-          [Op.iLike]: userData.userName
+          [Op.iLike]: userName
         }
       }})
     if (userNameExists) {
@@ -30,11 +30,17 @@ export const registerUser = async (userData: UserRegister): Promise<UserToken> =
       throw error
     }
 
-    const hashedPassword = await bcrypt.hash(userData.password, 10)
+    if (plainPassword !== confirmPassword) {
+      const error = new Error()
+      error.name = 'AuthRegisterErrorPasswordNotMatch'
+      throw error
+    }
 
-    const newUser: UserRegister = {
-      userName: userData.userName,
-      email: userData.email,
+    const hashedPassword = await bcrypt.hash(plainPassword, 10)
+
+    const newUser: SaveSessionDataInDb = {
+      userName,
+      email,
       password: hashedPassword,
     }
 
