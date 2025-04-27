@@ -16,7 +16,8 @@ export interface UserInterface {
 export type UserToken = Omit<UserInterface, "password">;
 export interface LoginResponse {
   user: UserToken;
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 type UserRegister = Omit<UserInterface, "id" | "avatar" | "isPremium">;
@@ -89,4 +90,10 @@ export interface RoomWithAdminInterface extends RoomInterface {
     avatar: string | null
     isPremium: boolean
   }
+}
+
+export interface JoinRoom {
+  userId: string;
+  roomId: string;
+  roomCode: string;
 }

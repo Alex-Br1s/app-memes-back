@@ -99,6 +99,21 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
     res.status(409).json({ error: "Room already exists by user" });
   },
 
+  PlayerAlreadyInRoom: (res: Response): void => {
+    res.status(409).json({ error: "Player al ready in the room" });
+  },
+
+  ErrorJoiningRoom: (res: Response): void => {
+    res.status(409).json({ error: "Error joining room" });
+  },
+
+  RoomCodeNotValid: (res: Response): void => {
+    res.status(409).json({ error: "Room code not valid or undefined" });
+  },
+
+  RoomCodeRequired: (res: Response): void => {
+    res.status(409).json({ error: "Room code required"})
+  },
 
   defaultError: (res: Response, error: Error): void => {
     console.error('Unhandled error:', error.name);

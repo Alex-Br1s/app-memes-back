@@ -19,11 +19,22 @@ export const handleRegisterUser = async (req: Request, res: Response, next: Next
 
 export const handleLoginUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const response = await loginUser(req.body)
+    const { user, accessToken, refreshToken } = await loginUser(req.body)
+    
+    // Guarda el refreshToken en una cookie segura
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, // No accesible desde JavaScript
+      secure: process.env.NODE_ENV === 'production', // Solo en HTTPS
+      sameSite: 'strict', // Para evitar ataques CSRF
+    });
+
     sendResponse({
       res,
       message: 'Usuario logueado con éxito',
-      data: response
+      data: {
+        user,
+        accessToken,
+      }
     })
   } catch (error) {
     next(error)

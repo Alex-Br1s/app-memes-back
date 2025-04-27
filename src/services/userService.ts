@@ -4,8 +4,10 @@ import { LoginResponse, UserInterface, UserLogin, /* UserLogin ,*/ UserRegister,
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const secretKey = process.env.JWT_SECRET
-if (!secretKey) throw new Error('JWT_SECRET no está definida en las variables de entorno')
+const accessToken = process.env.JWT_ACCESS_TOKEN
+if (!accessToken) throw new Error('JWT_SECRET no está definida en las variables de entorno')
+const refreshToken = process.env.JWT_REFRESH_TOKEN
+if (!refreshToken) throw new Error('JWT_REFRESH no está definida en las variables de entorno')
 
 export const registerUser = async (userData: UserRegister): Promise<UserToken> => {
   try {
@@ -47,6 +49,7 @@ export const registerUser = async (userData: UserRegister): Promise<UserToken> =
   }
 };
 
+
 export const loginUser = async (userData: UserLogin): Promise<LoginResponse> => {
   try {
     const verifyUser = await User.findOne({ where: { email: userData.email }})
@@ -62,13 +65,17 @@ export const loginUser = async (userData: UserLogin): Promise<LoginResponse> => 
       error.name = 'AuthLoginError'
       throw error
     }
-    const token = jwt.sign({id: verifyUser.id, userName: verifyUser.userName, email: verifyUser.email}, secretKey, {
+    const generateAccessToken = jwt.sign({id: verifyUser.id, userName: verifyUser.userName, email: verifyUser.email}, accessToken, {
       expiresIn: '7d'
+    })
+
+    const generateRefreshToken = jwt.sign({id: verifyUser.id, userName: verifyUser.userName, email: verifyUser.email}, refreshToken, {
+      expiresIn: '30d'
     })
 
     const { password:_, ...userWithoutPassword } = verifyUser.get({ plain: true})
     
-    return { user: userWithoutPassword, token}
+    return { user: userWithoutPassword, accessToken: generateAccessToken, refreshToken: generateRefreshToken }
 
   } catch (error) {
     (error as Error).name = (error as Error).name || 'AuthLoginError'

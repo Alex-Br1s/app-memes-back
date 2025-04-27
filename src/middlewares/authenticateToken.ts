@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { UserToken } from "../types/types";
-const secretKey = process.env.JWT_SECRET
+const accessToken = process.env.JWT_ACCESS_TOKEN
 
-if (!secretKey) throw new Error("No se ha definido la clave secreta para JWT en las variables de entorno");
+if (!accessToken) throw new Error("No se ha definido la clave secreta para JWT en las variables de entorno");
 
 export const authenticateToken = (req: Request, _: Response, next: NextFunction): Response | any => {
   const token = req.headers.authorization?.split(" ")[1]; //* Obtenemos el token desde el encabezado de la solicitud
@@ -14,7 +14,7 @@ export const authenticateToken = (req: Request, _: Response, next: NextFunction)
     return next(error)
   }
 
-  jwt.verify(token, secretKey, (err, decoded) => {
+  jwt.verify(token, accessToken, (err, decoded) => {
     if (err) {
       const error = new Error()
       error.name = 'JsonWebTokenError'
