@@ -1,3 +1,4 @@
+
 import { z } from "zod"
 
 //? Schema para validar los datos de registro y login de un usuario
@@ -54,7 +55,7 @@ export const createMemeSchema = z.object({
   texts: z.array( z.string().max(50, "Cada texto del meme debe tener como máximo 50 caracteres"))
     .max(5, "No se permiten más de 5 textos")
     .optional(), // hace que el campo texts sea opcional
-  imageUrl: z.string().url("La url de la imagen no es válida")
+  memeImage: z.string().url("La url de la imagen no es válida")
 });
 
 
@@ -107,6 +108,35 @@ export const joinRoomSchema = z.object({
   .max(9999, "El código de la sala no puede tener mas de 4 dígitos")
 })
 
+
+//? Schema para validar los datos de la plantilla de memes
+export const createTemplateSchema = z.object({
+  templateName: z.string({
+    invalid_type_error: "El nombre de la plantilla es obligatorio",
+  })
+  .min(3, "El nombre de la plantilla debe tener al menos 3 caracteres")
+  .max(100, "El nombre de la plantilla no puede tener más de 100 caracteres"),
+ 
+  templateImage: z.string({
+    invalid_type_error: "La url de la plantilla es obligatoria",
+  })
+  .url("La url de la plantilla no es válida"),
+
+  textAreas: z.array(
+    z.object({
+      x: z.number(),
+      y: z.number(),
+      width: z.number(),
+      height: z.number(),
+      fontSize: z.number().optional(),
+      align: z.enum(['left', 'center', 'right']).optional(),
+    })
+  ),
+ 
+  createdBy: z.string().optional(), 
+  
+  isApproved: z.boolean().default(false),
+})
 
 /* 
 {

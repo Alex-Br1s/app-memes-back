@@ -6,7 +6,7 @@ import { createMeme, getAllMemes } from "../services/memeService";
 
 export const handleCreateMeme = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { imageUrl, texts } = req.body
+    const { memeImage, texts } = req.body
     const roundId = req.params.roundId
     const userId = req.user?.id
     if (!userId) {
@@ -15,7 +15,7 @@ export const handleCreateMeme = async (req: Request, res: Response, next: NextFu
       throw error
     }
 
-    const response = await createMeme({ imageUrl, texts, roundId, userId })
+    const response = await createMeme({ memeImage, texts, roundId, userId })
     sendResponse({
       res,
       message: 'Meme creado con éxito',

@@ -44,7 +44,7 @@ export interface MemeInterface {
   id: string;
   roundId: string;
   userId: string;
-  imageUrl: string;
+  memeImage: string;
   texts: string[];
   votes: number;
 }
@@ -57,7 +57,7 @@ export interface MemeResponse {
 }
 
 export interface MemeCreate {
-  imageUrl: string;
+  memeImage: string;
   texts: string[];
   userId: string;
   roundId: string;

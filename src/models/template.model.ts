@@ -17,13 +17,13 @@ export class Template extends Model<Template> {
     type: DataType.STRING,
     allowNull: false
   })
-  name!: string;
+  templateName!: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false
   })
-  imageUrl!: string;
+  templateImage!: string;
 
   @Column({
     type: DataType.JSON,
@@ -44,7 +44,7 @@ export class Template extends Model<Template> {
     type: DataType.UUID,
     allowNull: true
   })
-  createdBy?: string;
+  createdBy?: string | null;
 
   @Column({
     type: DataType.BOOLEAN,

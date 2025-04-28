@@ -4,7 +4,7 @@ import { MemeCreate, MemeInterface, MemeResponse } from "../types/types"
 import { Round } from "../models/round.model"
 
 
-export const createMeme = async ({imageUrl, texts, roundId, userId}: MemeCreate): Promise<MemeInterface> => {
+export const createMeme = async ({memeImage, texts, roundId, userId}: MemeCreate): Promise<MemeInterface> => {
   try {
     const round = await Round.findByPk(roundId)
 
@@ -28,10 +28,10 @@ export const createMeme = async ({imageUrl, texts, roundId, userId}: MemeCreate)
     }
 
     const newMeme = {
-      imageUrl: imageUrl,
-      texts: texts || [],
-      roundId: roundId,
-      userId: userId
+      memeImage,
+      texts,
+      roundId,
+      userId
     }
     const memeCreate = await Meme.create(newMeme as CreationAttributes<Meme>)
     if (!memeCreate) {

@@ -32,7 +32,7 @@ export class Meme extends Model<Meme> {
     type: DataType.STRING,
     allowNull: false
   })
-  imageUrl!: string
+  memeImage!: string
 
   @Column({
     type: DataType.JSON,
