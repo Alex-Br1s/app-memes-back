@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { createMemeSchema, createRoomSchema, loginSchema, registerSchema, updateUserSchema } from "../schema/validateSchema";
+import { createMemeSchema, createRoomSchema, joinRoomSchema, loginSchema, registerSchema, updateUserSchema } from "../schema/validateSchema";
 
 //* Validar datos de registro y login
 export const validateRegister = (req: Request, res: Response, next: NextFunction): void => {
@@ -67,3 +67,14 @@ export const validateRoomData = (req: Request, res: Response, next: NextFunction
   }
 }
 
+export const validateRoomJoinData = (req: Request, res: Response, next: NextFunction): void => {
+  try {
+    joinRoomSchema.parse(req.body)
+    next()
+  } catch (error: any) {
+    res.status(400).json({
+      error: "Error al unirte a la sala",
+      details: error.errors.map((e: any) => e.message)
+    })
+  }
+}

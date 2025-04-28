@@ -69,7 +69,7 @@ export interface RoomInterface {
   id: string;
   adminId: string;
   roomName: string;
-  roomCode?: number;
+  roomCode?: number | null;
   isPublic: boolean;
   isSpecialRoom: boolean;
   rounds: number;
@@ -81,7 +81,7 @@ export interface RoomInterface {
 export interface CreateRoomInterface {
   adminId: string;
   roomName: string;
-  roomCode?: number;
+  roomCode?: number | null;
   isPublic: boolean;
   isSpecialRoom: boolean;
   rounds: number;
@@ -102,5 +102,7 @@ export interface RoomWithAdminInterface extends RoomInterface {
 export interface JoinRoom {
   userId: string;
   roomId: string;
-  roomCode: number;
+  roomCode?: number | null;
 }
+
+export type StartRoomByAdmin = Omit<JoinRoom, "roomCode">

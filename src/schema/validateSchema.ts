@@ -65,8 +65,8 @@ export const createRoomSchema = z.object({
     .max(25, "El nombre de la sala no puede tener más de 25 caracteres"),
 
   roomCode: z.number()
-    .min(1000, "El código de la sala debe tener 4 números")
-    .max(9999, "El código de la sala no puede tener más de 4 números")
+    .min(1000, "El código de la sala debe tener 4 dígitos")
+    .max(9999, "El código de la sala no puede tener más de 4 dígitos")
     .optional(),
 
   isPublic: z.boolean().default(true),
@@ -97,6 +97,16 @@ export const createRoomSchema = z.object({
   message: "Si la sala es pública, no debe tener un código. Si la sala es privada, debe tener un código.",
   path: ["roomCode"], // Se aplica sobre el campo 'roomCode'
 });
+
+
+export const joinRoomSchema = z.object({
+  roomCode: z.number({
+    invalid_type_error: "El código de la sala debe ser números"
+  })
+  .min(1000, "El código de la sala debe tener 4 dígitos")
+  .max(9999, "El código de la sala no puede tener mas de 4 dígitos")
+})
+
 
 /* 
 {

@@ -1,6 +1,6 @@
 import { CreationAttributes, Op } from "sequelize";
 import { Room } from "../models/room.model";
-import { CreateRoomInterface, JoinRoom, RoomWithAdminInterface } from "../types/types";
+import { CreateRoomInterface, JoinRoom, RoomWithAdminInterface, StartRoomByAdmin } from "../types/types";
 import { User } from "../models/user.model";
 import { RoomPlayer } from "../models/roomPlayer.model";
 
@@ -108,6 +108,34 @@ export const joinRoom = async ({ userId, roomId, roomCode }: JoinRoom) => {
     } as CreationAttributes<RoomPlayer>)
 
     return playerJoin
+  } catch (error) {
+    (error as Error).name = (error as Error).name || 'ErrorJoiningRoom'
+    throw error
+  }
+}
+
+export const startRoom = async ({ roomId, userId }: StartRoomByAdmin):Promise<any> => {
+  try {
+    const roomExist = await Room.findByPk(roomId)
+    if (!roomExist) {
+      const error = new Error()
+      error.name = "RoomNotFound"
+      throw error
+    }
+    if (roomExist.adminId !== userId) {
+      const error = new Error()
+      error.name = "RoomNotAdmin"
+      throw error
+    }
+    if (roomExist.phase !== 'waiting') {
+      const error = new Error()
+      error.name = "RoomAlreadyStarted"
+      throw error
+    }
+
+    const roomStarted = await roomExist.update({ phase: 'editing' })
+
+    return roomStarted
   } catch (error) {
     (error as Error).name = (error as Error).name || 'ErrorJoiningRoom'
     throw error
