@@ -35,7 +35,7 @@ export class Template extends Model<Template> {
     width: number;
     height: number;
     fontSize?: number;
-    align?: 'left' | 'center' | 'right'; // opcional si querés
+    align?: 'left' | 'center' | 'right';
   }[];
 
   // Si es null => plantilla de la app. Si tiene valor => la creó un usuario

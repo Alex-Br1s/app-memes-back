@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoute'
 import { handlerError } from './middlewares/errorHandler'
 import memeRoutes from './routes/memeRoute'
 import roomRoutes from './routes/roomRoute'
+import templateRouter from './routes/templateRoute'
 
 
 dotenv.config()
@@ -26,6 +27,8 @@ const api = '/server'
 app.use(api, userRoutes)
 app.use(api, memeRoutes)
 app.use(api, roomRoutes)
+app.use(api, templateRouter)
+
 
 app.use(handlerError) //* Middleware para manejar errores, tiene que ir debajo de todas las rutas
 

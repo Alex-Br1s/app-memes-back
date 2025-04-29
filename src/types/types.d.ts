@@ -106,3 +106,36 @@ export interface JoinRoom {
 }
 
 export type StartRoomByAdmin = Omit<JoinRoom, "roomCode">
+
+//? TEMPLATE INTERFACES/TYPES
+
+export interface TemplateInterface {
+  id: string;
+  templateName: string;
+  templateImage: string;
+  textAreas: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    fontSize?: number;
+    align?: 'left' | 'center' | 'right';
+  }[];
+  createdBy?: string | null;
+  isApproved: boolean;
+}
+
+export interface TemplateCreate {
+  templateName: string;
+  templateImage: string;
+  textAreas: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    fontSize?: number;
+    align?: 'left' | 'center' | 'right';
+  }[];
+  createdBy?: string | null;
+  isApproved: boolean;
+}
