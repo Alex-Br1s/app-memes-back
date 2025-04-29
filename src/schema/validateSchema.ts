@@ -117,25 +117,12 @@ export const createTemplateSchema = z.object({
   .min(3, "El nombre de la plantilla debe tener al menos 3 caracteres")
   .max(100, "El nombre de la plantilla no puede tener más de 100 caracteres"),
  
-  templateImage: z.string({
-    invalid_type_error: "La url de la plantilla es obligatoria",
-  })
-  .url("La url de la plantilla no es válida"),
 
-  textAreas: z.array(
-    z.object({
-      x: z.number(),
-      y: z.number(),
-      width: z.number(),
-      height: z.number(),
-      fontSize: z.number().optional(),
-      align: z.enum(['left', 'center', 'right']).optional(),
-    })
-  ),
+  textAreas: z.string(),
  
   createdBy: z.string().optional(), 
   
-  isApproved: z.boolean().default(false),
+  isApproved: z.string().optional(),
 })
 
 /* 
