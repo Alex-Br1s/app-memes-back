@@ -9,6 +9,7 @@ import { Round } from "../models/round.model";
 import { Template } from "../models/template.model";
 import { initializeAssociations } from "../models/associations";
 import { SavedMeme } from "../models/savedMeme";
+import { AssignedTemplate } from "../models/assignedTemplate";
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ export const connection = new Sequelize({
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
   logging: false,
-  models: [User, Room, Meme, Prompt, RoomPlayer, Round, Template, SavedMeme],
+  models: [User, Room, Meme, Prompt, RoomPlayer, Round, Template, SavedMeme, AssignedTemplate],
 });
 
 initializeAssociations();

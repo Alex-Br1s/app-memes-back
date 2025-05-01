@@ -4,11 +4,7 @@ import { createTemplate } from "../services/templateService";
 import { uploadImage } from "../config/cloudinaryUpload";
 import fs from "fs/promises";
 
-export const handleCreateTemplate = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const handleCreateTemplate = async ( req: Request, res: Response,next: NextFunction): Promise<void> => {
   try {
     console.log(req.body);
     const { templateName, textAreas, createdBy, isApproved } = req.body;

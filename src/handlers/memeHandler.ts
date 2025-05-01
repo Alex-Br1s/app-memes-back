@@ -14,6 +14,7 @@ export const handleCreateMeme = async (req: Request, res: Response, next: NextFu
       error.name = 'UserNotFoundError'
       throw error
     }
+    
 
     const response = await createMeme({ memeImage, texts, roundId, userId })
     sendResponse({

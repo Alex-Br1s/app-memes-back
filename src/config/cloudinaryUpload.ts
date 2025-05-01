@@ -1,7 +1,7 @@
 import cloudinary from "./cloudinary"
 
 
-export const uploadImage = async (filePath:string, isOfficial: boolean) => {
+export const uploadImage = async (filePath: string, isOfficial: boolean) => {
   const folder = isOfficial ? 'folder/official' : 'folder/community'
   const result = await cloudinary.uploader.upload(filePath, {
     folder,

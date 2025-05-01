@@ -1,8 +1,12 @@
 import { CreationAttributes, Op } from "sequelize";
 import { Room } from "../models/room.model";
-import { CreateRoomInterface, JoinRoom, RoomWithAdminInterface, StartRoomByAdmin } from "../types/types";
+import { CreateRoomInterface, JoinRoom, RandomTemplates, RoomWithAdminInterface, StartRoomByAdmin } from "../types/types";
 import { User } from "../models/user.model";
 import { RoomPlayer } from "../models/roomPlayer.model";
+import { Round } from "../models/round.model";
+import { Template } from "../models/template.model";
+import { AssignedTemplate } from "../models/assignedTemplate";
+import { io } from "../index";
 
 
 export const createRoom = async ({ adminId, roomName, roomCode, isPublic, isSpecialRoom, rounds, roundDuration, showUsernames, selectionMode }: CreateRoomInterface): Promise<RoomWithAdminInterface> => {
@@ -141,3 +145,53 @@ export const startRoom = async ({ roomId, userId }: StartRoomByAdmin):Promise<an
     throw error
   }
 }
+
+export const getRandomTemplates = async ({ roomId, roundId, userId }: RandomTemplates) => {
+  
+  // Buscamos la sala
+  const room = await Room.findByPk(roomId);
+  if (!room) throw new Error("RoomNotFound");
+
+  // Solo el admin puede ejecutar esta acción
+  if (room.adminId !== userId) throw new Error("RoomNotAdmin");
+
+  // Validamos la fase correcta
+  if (room.phase !== "assigning") throw new Error("RoomNotInAssigningPhase");
+
+  // Buscamos la ronda
+  const round = await Round.findByPk(roundId);
+  if (!round) throw new Error("RoundNotFound");
+
+  // Buscamos los jugadores de la sala
+  const players = await RoomPlayer.findAll({ where: { roomId } });
+
+  // Buscamos todas las plantillas disponibles
+  const templates = await Template.findAll();
+
+  // Validamos que haya suficientes plantillas
+  if (templates.length < players.length) throw new Error("NotEnoughTemplates");
+
+  // Mezclamos aleatoriamente las plantillas
+  const shuffledTemplates = templates.sort(() => Math.random() - 0.5);
+
+  // Asignamos una plantilla a cada jugador y la guardamos
+
+  const assignments = await Promise.all(
+    players.map((player, index) => {
+      return AssignedTemplate.create({
+        userId: player.userId,
+        roundId,
+        templateId: shuffledTemplates[index].id,
+      } as CreationAttributes<AssignedTemplate>);
+    })
+  );
+
+  // Cambiamos el estado de la sala y la ronda a "editing"
+  await room.update({ phase: "editing" });
+  await round.update({ status: "editing" });
+
+  // Emitimos a los jugadores que las plantillas ya fueron asignadas
+  io.to(roomId).emit("templates-assigned");
+
+  return assignments;
+};

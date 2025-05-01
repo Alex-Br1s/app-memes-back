@@ -105,6 +105,12 @@ export interface JoinRoom {
   roomCode?: number | null;
 }
 
+export interface RandomTemplates {
+  roomId: string
+  roundId: string
+  userId: string
+}
+
 export type StartRoomByAdmin = Omit<JoinRoom, "roomCode">
 
 //? TEMPLATE INTERFACES/TYPES

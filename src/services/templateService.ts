@@ -6,6 +6,7 @@ import { TemplateCreate, TemplateInterface } from "../types/types";
 
 export const createTemplate = async ({ templateName, templateImage, textAreas, createdBy, isApproved } : TemplateCreate): Promise<TemplateInterface> => {
   try {
+    console.log(typeof isApproved);
     const nameTemplateExists = await Template.findOne({
       where: {
         templateName
@@ -25,7 +26,7 @@ export const createTemplate = async ({ templateName, templateImage, textAreas, c
       isApproved
     }
 
-    const templateCreated = await Template.create(newTemplate as unknown as CreationAttributes<Template>)
+    const templateCreated = await Template.create(newTemplate as CreationAttributes<Template>)
     console.log(templateCreated);
     return templateCreated
 

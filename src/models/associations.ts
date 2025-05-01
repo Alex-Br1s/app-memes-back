@@ -8,6 +8,7 @@ import { Prompt } from "./prompt.model";
 import { Meme } from "./meme.model";
 import { Template } from "./template.model";
 import { SavedMeme } from "./savedMeme";
+import { AssignedTemplate } from "./assignedTemplate";
 
 export const initializeAssociations = () => {
   // 1. Un User puede crear muchas Rooms, una Room tiene un admin que es un User
@@ -43,6 +44,19 @@ export const initializeAssociations = () => {
   // 6. Un User puede guardar muchos memes y un memes puede ser guardado por muchos usuarios
   User.belongsToMany(Meme, { through: SavedMeme, foreignKey: 'userId'});
   Meme.belongsToMany(User, { through: SavedMeme, foreignKey: 'memeId'});
+
+  // Un usuario puede tener muchas plantillas asignadas (en distintas rondas)
+  User.hasMany(AssignedTemplate, { foreignKey: "userId" });
+  AssignedTemplate.belongsTo(User, { foreignKey: "userId" });
+
+  // Una ronda tiene muchas asignaciones de plantilla
+  Round.hasMany(AssignedTemplate, { foreignKey: "roundId" });
+  AssignedTemplate.belongsTo(Round, { foreignKey: "roundId" });
+
+  // Una plantilla puede ser asignada en muchas ocasiones
+  Template.hasMany(AssignedTemplate, { foreignKey: "templateId" });
+  AssignedTemplate.belongsTo(Template, { foreignKey: "templateId" });
+
 };
 
 /*

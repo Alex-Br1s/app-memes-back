@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { createRoom, joinRoom, startRoom } from "../services/roomService";
+import { createRoom, getRandomTemplates, joinRoom, startRoom } from "../services/roomService";
 import { sendResponse } from "../utils/sendResponse";
 
 
@@ -64,6 +64,28 @@ export const handleStartRoom = async (req: Request, res: Response, next: NextFun
       statusCode: 200,
       message: 'Iniciaste la sala, a jugar!',
       data: responsePlayRoom,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+export const handleGetRandomTemplates = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { roomId, roundId } = req.params
+    const userId = req.user?.id
+    if (!userId) {
+      const error = new Error()
+      error.name = 'UserNotFoundError'
+      throw error
+    }
+    const userTemplate = await getRandomTemplates({ roomId, roundId, userId })
+    sendResponse({
+      res,
+      statusCode: 200,
+      message: 'Templates obtenido con éxito',
+      data: userTemplate,
     })
   } catch (error) {
     next(error)
