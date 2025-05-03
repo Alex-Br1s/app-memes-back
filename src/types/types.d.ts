@@ -57,7 +57,6 @@ export interface MemeResponse {
 }
 
 export interface MemeCreate {
-  memeImage: string;
   texts: string[];
   userId: string;
   roundId: string;
@@ -109,6 +108,12 @@ export interface RandomTemplates {
   roomId: string
   roundId: string
   userId: string
+}
+
+export interface RandomTemplatesResponse {
+  userId: string
+  roundId: string
+  templateId: string
 }
 
 export type StartRoomByAdmin = Omit<JoinRoom, "roomCode">

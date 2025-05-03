@@ -3,6 +3,7 @@ import { User } from "../models/user.model";
 import { LoginDataEntry, LoginResponse, SaveSessionDataInDb, UserInterface, UserLogin, UserToken, UserUpdate } from "../types/types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { showError } from "../utils/validateErrors";
 
 const accessToken = process.env.JWT_ACCESS_TOKEN
 if (!accessToken) throw new Error('JWT_SECRET no está definida en las variables de entorno')
@@ -12,11 +13,7 @@ if (!refreshToken) throw new Error('JWT_REFRESH no está definida en las variabl
 export const registerUser = async ({ userName, email, password: plainPassword, confirmPassword }: LoginDataEntry): Promise<UserToken> => {
   try {
     const userExists = await User.findOne({ where: { email: email }});
-    if (userExists) {
-      const error = new Error()
-      error.name = 'AuthRegisterError'
-      throw error
-    }
+    showError(userExists, 'AuthRegisterError')
 
     const userNameExists = await User.findOne({ 
       where: {
@@ -24,17 +21,14 @@ export const registerUser = async ({ userName, email, password: plainPassword, c
           [Op.iLike]: userName
         }
       }})
-    if (userNameExists) {
-      const error = new Error()
-      error.name = 'AuthRegisterErrorNameAlreadyExists'
-      throw error
-    }
+    showError(userNameExists, 'AuthRegisterErrorNameAlreadyExists')
 
-    if (plainPassword !== confirmPassword) {
+   /*  if (plainPassword !== confirmPassword) {
       const error = new Error()
       error.name = 'AuthRegisterErrorPasswordNotMatch'
       throw error
-    }
+    } */
+    showError(plainPassword !== confirmPassword, 'AuthRegisterErrorPasswordNotMatch')
 
     const hashedPassword = await bcrypt.hash(plainPassword, 10)
 
@@ -59,27 +53,30 @@ export const registerUser = async ({ userName, email, password: plainPassword, c
 export const loginUser = async (userData: UserLogin): Promise<LoginResponse> => {
   try {
     const verifyUser = await User.findOne({ where: { email: userData.email }})
-    if (!verifyUser) {
+    /* if (!verifyUser) {
       const error = new Error()
       error.name = 'AuthLoginError'
       throw error
-    }
-
-    const verifyPassword = await bcrypt.compare(userData.password, verifyUser.password)
-    if (!verifyPassword){
+    } */
+    showError(!verifyUser, 'AuthLoginError')
+    
+    
+    const verifyPassword = await bcrypt.compare(userData.password, verifyUser!.password)
+    showError(!verifyPassword, 'AuthLoginError')
+    /* if (!verifyPassword){
       const error = new Error()
       error.name = 'AuthLoginError'
       throw error
-    }
-    const generateAccessToken = jwt.sign({id: verifyUser.id, userName: verifyUser.userName, email: verifyUser.email}, accessToken, {
+    } */
+    const generateAccessToken = jwt.sign({id: verifyUser!.id, userName: verifyUser!.userName, email: verifyUser!.email}, accessToken, {
       expiresIn: '7d'
     })
 
-    const generateRefreshToken = jwt.sign({id: verifyUser.id, userName: verifyUser.userName, email: verifyUser.email}, refreshToken, {
+    const generateRefreshToken = jwt.sign({id: verifyUser!.id, userName: verifyUser!.userName, email: verifyUser!.email}, refreshToken, {
       expiresIn: '30d'
     })
 
-    const { password:_, ...userWithoutPassword } = verifyUser.get({ plain: true})
+    const { password:_, ...userWithoutPassword } = verifyUser!.get({ plain: true})
     
     return { user: userWithoutPassword, accessToken: generateAccessToken, refreshToken: generateRefreshToken }
 
@@ -92,11 +89,12 @@ export const loginUser = async (userData: UserLogin): Promise<LoginResponse> => 
 export const getUserById = async (userId: string): Promise<UserInterface | null> => {
   try {
     const user = await User.findByPk(userId);
-    if (!user) {
+   /*  if (!user) {
       const error = new Error()
       error.name = 'UserNotFoundError'
       throw error
-    }
+    } */
+    showError(!user, 'UserNotFoundError')
     return user;
   } catch (error) {
     (error as Error).name = (error as Error).name || 'UserNotFoundError'
@@ -107,24 +105,26 @@ export const getUserById = async (userId: string): Promise<UserInterface | null>
 export const updateUser = async (userId: string, userData: UserUpdate): Promise<UserToken> => {
   try {
     const userToUpdate = await User.findByPk(userId)
-    if(!userToUpdate) {
+   /*  if(!userToUpdate) {
       const error = new Error()
       error.name = 'UserNotFoundError'
       throw error
-    }
+    } */
+    showError(!userToUpdate, 'UserNotFoundError')
     const userNameExists = await User.findOne({ 
       where: {
         userName: {
           [Op.iLike]: userData.userName
         }
       }})
-    if (userNameExists && userNameExists.id !== userId) {
+    showError(userNameExists && userNameExists.id !== userId, 'AuthRegisterErrorNameAlreadyExists')
+    /* if (userNameExists && userNameExists.id !== userId) {
       const error = new Error()
       error.name = 'AuthRegisterErrorNameAlreadyExists'
       throw error
-    }
+    } */
 
-    const updatedUser = (await userToUpdate.update(userData)).get({ plain: true })
+    const updatedUser = (await userToUpdate!.update(userData)).get({ plain: true })
     const { password:_, ...userWithoutPassword } = updatedUser
     return userWithoutPassword
   } catch (error) {

@@ -18,7 +18,7 @@ roomRoutes.put("/room/:roomId/start", authenticateToken, (req, res, next) => {
   handleStartRoom(req, res, next).catch(next)
 })
 
-roomRoutes.get("/room/:roomId/assign-templates", authenticateToken, (req, res, next) => {
+roomRoutes.post("/room/:roomId/:roundId/assign-templates", authenticateToken, (req, res, next) => {
   handleGetRandomTemplates(req, res, next).catch(next)
 })
 

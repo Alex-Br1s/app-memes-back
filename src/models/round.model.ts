@@ -40,7 +40,7 @@ export class Round extends Model<Round> {
 
   @Column({
     type: DataType.STRING,
-    defaultValue: 'editing' // 'editing', 'voting', 'finished'
+    defaultValue: 'assigning' // 'editing', 'voting', 'finished'
   })
   status!: string;
 

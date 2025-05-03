@@ -1,4 +1,4 @@
-import { Table, Model, Column, DataType, PrimaryKey, ForeignKey, Default } from "sequelize-typescript"
+import { Table, Model, Column, DataType, PrimaryKey, ForeignKey, Default, BelongsTo } from "sequelize-typescript"
 import { User } from "./user.model"
 import { Round } from "./round.model"
 import { Template } from "./template.model"
@@ -35,4 +35,8 @@ export class AssignedTemplate extends Model<AssignedTemplate> {
     allowNull: false
   })
   templateId!: string
+
+  @BelongsTo(() => Template)
+  template!: Template;
+
 }

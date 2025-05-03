@@ -1,3 +1,4 @@
+
 import type { Request, Response, NextFunction } from "express";
 
 const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
@@ -83,7 +84,7 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
     res.status(404).json({ error: "Round not found" });
   },
 
-  RoundNotEditing: (res: Response): void => {
+  RoomOrRoundNotEditing: (res: Response): void => {
     res.status(404).json({ error: "The room is not in editing" });
   },
 
@@ -96,6 +97,10 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
 
   RoomNotCreated: (res: Response): void => {
     res.status(404).json({ error: "Room not created" });
+  },
+
+  RoomNotAdmin: (res: Response): void => {
+    res.status(404).json({ error: "The user is not an admin of the room" });
   },
 
   RoomNameAlreadyExists: (res: Response): void => {
@@ -114,6 +119,10 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
     res.status(409).json({ error: "Error joining room" });
   },
 
+  UserNotInRoom: (res: Response): void => {
+    res.status(400).json({ error: "The user is not in the room" })
+  },
+
   RoomCodeNotValid: (res: Response): void => {
     res.status(409).json({ error: "Room code not valid or incorrect" });
   },
@@ -125,6 +134,11 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
   RoomCodeNotAllowedInPublicRoom: (res: Response): void => {
     res.status(409).json({ error: "Room code not allowed in public room" })
   },
+  
+  //*Errores de template
+  AssignedTemplateNotFound: (res: Response): void => {
+    res.status(404).json({ error: "No template was assigned to the user" })
+  },  
 
   defaultError: (res: Response, error: Error): void => {
     console.error('Unhandled error:', error.name);

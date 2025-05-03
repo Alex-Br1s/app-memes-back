@@ -2,30 +2,48 @@ import { CreationAttributes } from "sequelize"
 import { Meme } from "../models/meme.model"
 import { MemeCreate, MemeInterface, MemeResponse } from "../types/types"
 import { Round } from "../models/round.model"
+import { AssignedTemplate } from "../models/assignedTemplate"
+import { Template } from "../models/template.model"
+import { Room } from "../models/room.model"
+import { RoomPlayer } from "../models/roomPlayer.model"
+import { showError } from "../utils/validateErrors"
 
 
-export const createMeme = async ({memeImage, texts, roundId, userId}: MemeCreate): Promise<MemeInterface> => {
+export const createMeme = async ({ texts, roundId, userId }: MemeCreate): Promise<MemeInterface> => {
   try {
     const round = await Round.findByPk(roundId)
+    showError(!round, 'RoundNotFound')
 
-    if (!round) {
+    const room = await Room.findByPk(round!.roomId) 
+    showError(!room, 'RoomNotFound')
+    
+    if (round!.status !== 'editing' && room!.phase !== 'editing'){
       const error = new Error()
-      error.name = "RoundNotFound"
+      error.name = 'RoomOrRoundNotEditing'
       throw error
     }
 
-    if (round.status !== 'editing') {
-      const error = new Error()
-      error.name = "RoundNotEditing"
-      throw error
-    }
+    const isPlayerInRoom = await RoomPlayer.findOne({
+      where:{
+        roomId: room!.id,
+        userId
+      }
+    })
+    showError(!isPlayerInRoom, 'UserNotInRoom')
+
+    const assignedTemplate = await AssignedTemplate.findOne({
+      where: {
+        userId: userId,
+        roundId
+      },
+      include: [Template]
+    })
+    showError(!assignedTemplate && !assignedTemplate!.template, 'AssignedTemplateNotFound')
+
+    const memeImage = assignedTemplate!.template.templateImage
 
     const memeExist = await Meme.findOne({ where: {userId, roundId} })
-    if (memeExist) {
-      const error = new Error()
-      error.name = "MemeAlreadyExists"
-      throw error
-    }
+    showError(memeExist, 'MemeAlreadyExists')
 
     const newMeme = {
       memeImage,
@@ -34,11 +52,7 @@ export const createMeme = async ({memeImage, texts, roundId, userId}: MemeCreate
       userId
     }
     const memeCreate = await Meme.create(newMeme as CreationAttributes<Meme>)
-    if (!memeCreate) {
-      const error = new Error()
-      error.name = "MemeNotCreated"
-      throw error
-    }
+    showError(!memeCreate, 'MemeNotCreated')
 
     return memeCreate
   } catch (error) {
