@@ -49,6 +49,7 @@ export interface MemeInterface {
   votes: number;
 }
 
+
 export interface MemeResponse {
   memes: MemeInterface[];
   totalPages: number;

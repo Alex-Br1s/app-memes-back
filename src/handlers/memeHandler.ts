@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../utils/sendResponse";
-import { createMeme, getAllMemes } from "../services/memeService";
-
+import { createMeme, getAllMemes, memesByRound } from "../services/memeService";
 
 
 export const handleCreateMeme = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -44,6 +43,23 @@ export const handleGetAllMemes = async (req: Request, res: Response, next: NextF
         totalPages,
         currentPage
       }
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+export const handleMemesByRound = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { roundId } = req.params
+
+    const memes = await memesByRound(roundId)
+    sendResponse({
+      res,
+      statusCode: 200,
+      message: "Memes obtenidos con éxito",
+      data: memes
     })
   } catch (error) {
     next(error)

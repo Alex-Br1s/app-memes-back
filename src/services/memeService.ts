@@ -7,6 +7,7 @@ import { Template } from "../models/template.model"
 import { Room } from "../models/room.model"
 import { RoomPlayer } from "../models/roomPlayer.model"
 import { showError } from "../utils/validateErrors"
+import { User } from "../models/user.model"
 
 
 export const createMeme = async ({ texts, roundId, userId }: MemeCreate): Promise<MemeInterface> => {
@@ -85,3 +86,25 @@ export const getAllMemes = async (page: string): Promise<MemeResponse> => {
 }
 
 
+
+
+export const memesByRound = async (roundId: string): Promise<MemeInterface[] | undefined> => {
+  try {
+    const roundExist = Round.findByPk(roundId)
+    showError(!roundExist, 'RoundNotFound')
+
+    const memes = await Meme.findAll({
+      where: {
+        roundId
+      },
+      include: [User]
+    })
+    console.log(memes);
+    showError(!memes, 'MemesNotFound')
+
+    return memes
+  } catch (error) {
+    (error as Error).name = (error as Error).name || 'MemesNotFound'
+    throw error
+  }
+}
