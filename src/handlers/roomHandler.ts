@@ -1,12 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { createRoom, getRandomTemplates, joinRoom, startRoom } from "../services/roomService";
+import { createRoom, assignTemplatesToPlayers, joinRoom, startRoom, getTemplatesFromUsers } from "../services/roomService";
 import { sendResponse } from "../utils/sendResponse";
-
+import { showError } from "../utils/validateErrors";
 
 export const handleCreateRoom = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const adminId = req.user?.id
-    console.log(req.user);
     if (!adminId) {
       const error = new Error()
       error.name = 'UserNotFoundError'
@@ -71,7 +70,7 @@ export const handleStartRoom = async (req: Request, res: Response, next: NextFun
 }
 
 
-export const handleGetRandomTemplates = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const handleAssignTemplatesToPlayers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { roomId, roundId } = req.params
     const userId = req.user?.id
@@ -80,11 +79,11 @@ export const handleGetRandomTemplates = async (req: Request, res: Response, next
       error.name = 'UserNotFoundError'
       throw error
     }
-    const userTemplate = await getRandomTemplates({ roomId, roundId, userId })
+    const userTemplate = await assignTemplatesToPlayers({ roomId, roundId, userId })
     sendResponse({
       res,
       statusCode: 200,
-      message: 'Templates obtenido con éxito',
+      message: 'Plantillas asignadas a los usuarios',
       data: userTemplate,
     })
   } catch (error) {
@@ -92,6 +91,24 @@ export const handleGetRandomTemplates = async (req: Request, res: Response, next
   }
 }
 
+
+export const handleGetTemplatesFromUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { roundId } = req.params
+    const userId = req.user?.id
+    showError(!userId, 'UserNotFoundError')
+
+    const templatesUsers = await getTemplatesFromUsers(roundId, userId!)
+    sendResponse({
+      res,
+      statusCode: 200,
+      message: 'Plantillas de los usuarios obtenida con éxito',
+      data: templatesUsers
+    })
+  } catch (error) {
+    next(error)
+  }
+}
 
 //!Token del admin de la sala: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI2NTNkOWUwLWNiNmYtNDM3NC1iZmM2LTc5MzA3NGRjYTg1ZiIsInVzZXJOYW1lIjoiVXNlcjAwMSIsImVtYWlsIjoidXNlcjAwMUBnbWFpbC5jb20iLCJpYXQiOjE3NDYyMzAyMDMsImV4cCI6MTc0NjgzNTAwM30.6g6MQslCb1ZdzPQdPvx5RVkoCWJbkz4wfS9BFzycp58
 //!Id del usuario1 que se unió: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg0ODEwNWI2LTk4MGUtNGNiMC1iNWU0LTUyYjE1NDk4MmZlYiIsInVzZXJOYW1lIjoiVXNlcjAwMiIsImVtYWlsIjoidXNlcjAwMkBnbWFpbC5jb20iLCJpYXQiOjE3NDYyMzA0MDksImV4cCI6MTc0NjgzNTIwOX0.0q3uroy-u2fesdqXtLKDn-HWjooqW65nDi4sWbhV2Kc

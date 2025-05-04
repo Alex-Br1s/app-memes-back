@@ -137,6 +137,16 @@ export interface TemplateInterface {
   isApproved: boolean;
 }
 
+export interface TemplateFromUsers {
+  id: string
+  userId: string
+  roundId: string
+  templateId: string
+  createdAt?: string
+  updatedAt?: string
+  template: TemplateInterface
+}
+
 export interface TemplateCreate {
   templateName: string;
   templateImage: string;

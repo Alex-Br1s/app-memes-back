@@ -1,12 +1,13 @@
 import { CreationAttributes, Op } from "sequelize";
 import { Room } from "../models/room.model";
-import { CreateRoomInterface, JoinRoom, RandomTemplates, RandomTemplatesResponse, RoomWithAdminInterface, StartRoomByAdmin } from "../types/types";
+import { CreateRoomInterface, JoinRoom, RandomTemplates, RoomWithAdminInterface, StartRoomByAdmin, TemplateFromUsers } from "../types/types";
 import { User } from "../models/user.model";
 import { RoomPlayer } from "../models/roomPlayer.model";
 import { Round } from "../models/round.model";
 import { Template } from "../models/template.model";
 import { AssignedTemplate } from "../models/assignedTemplate";
 import { io } from "../index";
+import { showError } from "../utils/validateErrors";
 
 
 export const createRoom = async ({ adminId, roomName, roomCode, isPublic, isSpecialRoom, rounds, roundDuration, showUsernames, selectionMode }: CreateRoomInterface): Promise<RoomWithAdminInterface> => {
@@ -126,7 +127,7 @@ export const startRoom = async ({ roomId, userId }: StartRoomByAdmin):Promise<an
       error.name = "RoomNotFound"
       throw error
     }
-
+    //! AGREGAR VALIDACIÓN QUE NO DEJE INICIAR SI LA SALA ESTA VACIA
     if (roomExist.adminId !== userId) {
       const error = new Error()
       error.name = "RoomNotAdmin"
@@ -156,37 +157,27 @@ export const startRoom = async ({ roomId, userId }: StartRoomByAdmin):Promise<an
   }
 }
 
-export const getRandomTemplates = async ({ roomId, roundId, userId }: RandomTemplates): Promise<RandomTemplatesResponse[]> => {
+export const assignTemplatesToPlayers = async ({ roomId, roundId, userId }: RandomTemplates): Promise<void> => {
   try {
-    
-    // Buscamos la sala
     const room = await Room.findByPk(roomId);
-    if (!room) throw new Error("RoomNotFound");
+    showError(!room, "RoomNotFound");
   
-    // Solo el admin puede ejecutar esta acción
-    if (room.adminId !== userId) throw new Error("RoomNotAdmin");
+    // Solo el admin puede ejecutar esta acción (en realidad solo ejecuta el start de la sala)
+    showError(room?.adminId !== userId, "RoomNotAdmin");
   
-    // Validamos la fase correcta
-    if (room.phase !== "assigning") throw new Error("RoomNotInAssigningPhase");
+    showError(room?.phase !== "assigning", "RoomNotInAssigningPhase");
   
-    // Buscamos la ronda
     const round = await Round.findByPk(roundId);
-    if (!round) throw new Error("RoundNotFound");
+    showError(!round, "RoundNotFound");
   
-    // Buscamos los jugadores de la sala
     const players = await RoomPlayer.findAll({ where: { roomId } });
-  
-    // Buscamos todas las plantillas disponibles
+
     const templates = await Template.findAll();
-  
-    // Validamos que haya suficientes plantillas
-    if (templates.length < players.length) throw new Error("NotEnoughTemplates");
-  
+
     // Mezclamos aleatoriamente las plantillas
     const shuffledTemplates = templates.sort(() => Math.random() - 0.5);
   
     // Asignamos una plantilla a cada jugador y la guardamos
-  
     await Promise.all(
       players.map((player, index) => {
         return AssignedTemplate.create({
@@ -198,23 +189,36 @@ export const getRandomTemplates = async ({ roomId, roundId, userId }: RandomTemp
     );
   
     // Cambiamos el estado de la sala y la ronda a "editing"
-    await room.update({ phase: "editing" });
-    await round.update({ status: "editing" });
+    await room!.update({ phase: "editing" });
+    await round!.update({ status: "editing" });
   
     // Emitimos a los jugadores que las plantillas ya fueron asignadas
     io.to(roomId).emit("templates-assigned");
-
-    const assignmentsTemplates = await AssignedTemplate.findAll({
-      where: {
-        roundId
-      },
-      include: [Template]
-    })
-  
-    return assignmentsTemplates;
     
   } catch (error) {
     (error as Error).name = (error as Error).name || 'ErrorJoiningRoom'
     throw error
   }
 };
+
+export const getTemplatesFromUsers = async (roundId: string, userId: string): Promise<TemplateFromUsers[]> => {
+  try {
+    const roundExists = await Round.findByPk(roundId)
+    showError(!roundExists, 'RoundNotFound')
+
+    const templatesUsers = await AssignedTemplate.findAll({
+      where:{
+        roundId,
+        userId
+      },
+      include: [Template]
+    })
+    showError(!templatesUsers, 'AssignedTemplateNotFound')
+
+    return templatesUsers
+  } catch (error) {
+    (error as Error).name = (error as Error).name || 'AssignedTemplateNotFound'
+    throw error
+  }
+}
+
