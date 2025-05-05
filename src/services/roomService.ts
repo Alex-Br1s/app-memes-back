@@ -10,29 +10,22 @@ import { io } from "../index";
 import { showError } from "../utils/validateErrors";
 
 
-export const createRoom = async ({ adminId, roomName, roomCode, isPublic, isSpecialRoom, rounds, roundDuration, showUsernames, selectionMode }: CreateRoomInterface): Promise<RoomWithAdminInterface> => {
+export const createRoom = async ({ adminId, roomName, roomCode, isPublic, isSpecialRoom, rounds, showUsernames, selectionMode }: CreateRoomInterface): Promise<RoomWithAdminInterface> => {
   try {
     const roomExist = await Room.findOne({ where: { roomName } });
-    if (roomExist) {
-      const error = new Error()
-      error.name = "RoomNameAlreadyExists"
-      throw error
-    }
+    showError(roomExist, "RoomNameAlreadyExists")
+     
 
     const roomExistByUser = await Room.findOne({ 
       where: {
         adminId, 
         phase: { 
           [Op.not] : 'finished' //? No permitir volver a crear si aun el estado de phase (fase) no es finished, esto permite volver a crear una sala sin "eliminar la sala"
-        }
+        },
+        isClosed: false
       } 
     })
-    if (roomExistByUser) {
-      const error = new Error()
-      error.name = "RoomAlreadyExistsByUser"
-      throw error
-    }
-
+    showError(roomExistByUser, 'RoomAlreadyExistsByUser')
     
     const newRoom = {
       adminId,
@@ -41,22 +34,19 @@ export const createRoom = async ({ adminId, roomName, roomCode, isPublic, isSpec
       isPublic,
       isSpecialRoom,
       rounds,
-      roundDuration,
       phase: 'waiting',
+      playAgain: false,
+      isClosed: false,
       showUsernames,
       selectionMode
     }
 
     const room = await Room.create(newRoom as CreationAttributes<Room>)
 
-    if (!room) {
-      const error = new Error()
-      error.name = "RoomNotCreated"
-      throw error
-    }
+    showError(!room, "RoomNotCreated")
 
     //* obtenemos la sala con la información del admin
-    const roomWithAdmin = await Room.findOne({
+    const roomCreated = await Room.findOne({
       where: { id: room.id },
       include: [
         {
@@ -66,14 +56,15 @@ export const createRoom = async ({ adminId, roomName, roomCode, isPublic, isSpec
         }
       ]
     });
+    showError(!roomCreated, "RoomNotFound")
+    
+    await RoomPlayer.create({
+      roomId: room.id,
+      userId: adminId,
+      joinedAt: new Date()
+    } as CreationAttributes<RoomPlayer>)
 
-    if (!roomWithAdmin) {
-      const error = new Error()
-      error.name = "RoomNotFound"
-      throw error
-    }
-
-    return roomWithAdmin as unknown as RoomWithAdminInterface;
+    return roomCreated as unknown as RoomWithAdminInterface;
 
   } catch (error) {
     (error as Error).name = (error as Error).name || 'RoomNotCreated'
@@ -106,9 +97,6 @@ export const joinRoom = async ({ userId, roomId, roomCode }: JoinRoom) => {
     const playerJoin = await RoomPlayer.create({
       userId,
       roomId,
-      score: 0,
-      isWinner: false,
-      isReady: false,
       joinedAt: new Date(),
     } as CreationAttributes<RoomPlayer>)
 
@@ -122,27 +110,25 @@ export const joinRoom = async ({ userId, roomId, roomCode }: JoinRoom) => {
 export const startRoom = async ({ roomId, userId }: StartRoomByAdmin):Promise<any> => {
   try {
     const roomExist = await Room.findByPk(roomId)
-    if (!roomExist) {
-      const error = new Error()
-      error.name = "RoomNotFound"
-      throw error
-    }
-    //! AGREGAR VALIDACIÓN QUE NO DEJE INICIAR SI LA SALA ESTA VACIA
-    if (roomExist.adminId !== userId) {
-      const error = new Error()
-      error.name = "RoomNotAdmin"
-      throw error
-    }
-    if (roomExist.phase !== 'waiting') {
-      const error = new Error()
-      error.name = "RoomAlreadyStarted"
-      throw error
-    }
+    showError(!roomExist, "RoomNotFound")
 
-    await roomExist.update({ phase: 'assigning' })
+    showError(roomExist!.adminId !== userId, "RoomNotAdmin")
+     
+    showError (roomExist!.phase !== 'waiting', "RoomAlreadyStarted")
+
+    const playersInRoom = await RoomPlayer.findAll({
+      where: {
+        roomId,
+        leftAt: null as any
+      }
+    })
+
+    showError(playersInRoom.length < 2, 'MinimumTwoPlayersToStartRoom')
+
+    await roomExist?.update({ phase: 'assigning' })
 
     const newRound = await Round.create({
-      roomId: roomExist.id,
+      roomId: roomExist?.id,
       status: 'assigning',
       roundNumber: 1
     } as CreationAttributes<Round>)
@@ -152,7 +138,7 @@ export const startRoom = async ({ roomId, userId }: StartRoomByAdmin):Promise<an
       round: newRound
     }
   } catch (error) {
-    (error as Error).name = (error as Error).name || 'ErrorJoiningRoom'
+    (error as Error).name = (error as Error).name || 'StartRoomError'
     throw error
   }
 }
@@ -201,12 +187,12 @@ export const assignTemplatesToPlayers = async ({ roomId, roundId, userId }: Rand
   }
 };
 
-export const getTemplatesFromUsers = async (roundId: string, userId: string): Promise<TemplateFromUsers[]> => {
+export const getTemplateFromUser = async (roundId: string, userId: string): Promise<TemplateFromUsers> => {
   try {
     const roundExists = await Round.findByPk(roundId)
     showError(!roundExists, 'RoundNotFound')
 
-    const templatesUsers = await AssignedTemplate.findAll({
+    const templatesUsers = await AssignedTemplate.findOne({
       where:{
         roundId,
         userId
@@ -214,8 +200,8 @@ export const getTemplatesFromUsers = async (roundId: string, userId: string): Pr
       include: [Template]
     })
     showError(!templatesUsers, 'AssignedTemplateNotFound')
-
-    return templatesUsers
+    console.log(templatesUsers);
+    return templatesUsers!
   } catch (error) {
     (error as Error).name = (error as Error).name || 'AssignedTemplateNotFound'
     throw error

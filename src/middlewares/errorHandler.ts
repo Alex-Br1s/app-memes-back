@@ -111,8 +111,20 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
     res.status(409).json({ error: "Room already exists by user" });
   },
 
+  RoomAlreadyStarted: (res: Response): void => {
+    res.status(409).json({ error: "The room has already been started" });
+  },
+
+  StartRoomError: (res: Response): void => {
+    res.status(409).json({ error: "Error starting the room" });
+  },
+
   PlayerAlreadyInRoom: (res: Response): void => {
     res.status(409).json({ error: "Player al ready in the room" });
+  },
+
+  MinimumTwoPlayersToStartRoom: (res: Response): void => {
+    res.status(409).json({ error: "A minimum of 2 players are required to start playing" });
   },
 
   ErrorJoiningRoom: (res: Response): void => {
@@ -135,6 +147,7 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
     res.status(409).json({ error: "Room code not allowed in public room" })
   },
   
+
   //*Errores de template
   AssignedTemplateNotFound: (res: Response): void => {
     res.status(404).json({ error: "No template was assigned to the user" })

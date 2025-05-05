@@ -53,16 +53,22 @@ export class Room extends Model<Room> {
   rounds!: number
 
   @Column({
-    type: DataType.INTEGER,
-    defaultValue: 60 //segundos por ronda
-  })
-  roundDuration!: number
-
-  @Column({
     type: DataType.STRING,
-    defaultValue: 'waiting' // por defecto la sala se cera en 1:'waiting', 'prompt': IA, 'editing', 'voting', 'finished', etc.
+    defaultValue: 'waiting' // por defecto la sala se crea en 1:'waiting', 'prompt': IA, 'editing', 'voting', 'finished', etc.
   })
   phase!: string;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false
+  })
+  playAgain!: boolean // Permitir al admin de la sala volver a jugar sin necesidad de crear una nueva sala
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false
+  })
+  isClosed!: boolean // Si es true la sala se cierra definitivamente
 
   @Column({
     type: DataType.BOOLEAN,

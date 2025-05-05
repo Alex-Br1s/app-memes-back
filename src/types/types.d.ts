@@ -85,7 +85,6 @@ export interface CreateRoomInterface {
   isPublic: boolean;
   isSpecialRoom: boolean;
   rounds: number;
-  roundDuration: number;
   showUsernames: boolean;
   selectionMode: string;
 }

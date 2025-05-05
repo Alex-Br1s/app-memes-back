@@ -80,6 +80,10 @@ export const createRoomSchema = z.object({
 
   roundDuration: z.number().default(60),
 
+  playAgain: z.boolean().default(false),
+
+  isClosed: z.boolean().default(false),
+
   showUsernames: z.boolean().default(true),
 
   selectionMode: z.enum(["famousMemes", "memesIA"]).default("famousMemes"),

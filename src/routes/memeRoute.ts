@@ -17,6 +17,8 @@ memeRoutes.get('/memes/:roundId', (req, res, next) => {
   handleMemesByRound(req, res, next).catch(next)
 })
 
-memeRoutes.post('memes/:roundId/')
-
+/* memeRoutes.post('/vote/memes/:roundId', (req, res, next) => {
+  handleVoteMemes(req, res, next).catch(next)
+})
+ */
 export default memeRoutes

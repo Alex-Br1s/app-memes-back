@@ -10,11 +10,7 @@ import {
 } from "../schema/validateSchema";
 
 //* Validar datos de registro y login
-export const validateRegister = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const validateRegister = (req: Request, res: Response, next: NextFunction): void => {
   try {
     registerSchema.parse(req.body);
     next();
@@ -26,11 +22,7 @@ export const validateRegister = (
   }
 };
 
-export const validateLogin = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const validateLogin = (req: Request, res: Response, next: NextFunction): void => {
   try {
     loginSchema.parse(req.body);
     next();
@@ -43,11 +35,7 @@ export const validateLogin = (
 };
 
 //* Validar datos de usuario
-export const validateUserData = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const validateUserData = (req: Request, res: Response, next: NextFunction): void => {
   try {
     updateUserSchema.parse(req.body);
     next();
@@ -60,11 +48,7 @@ export const validateUserData = (
 };
 
 //* Validar datos de memes
-export const validateMemeData = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const validateMemeData = (req: Request, res: Response, next: NextFunction): void => {
   try {
     createMemeSchema.parse(req.body);
     next();
@@ -77,11 +61,7 @@ export const validateMemeData = (
 };
 
 //* Validar datos de salas
-export const validateRoomData = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const validateRoomData = (req: Request, res: Response, next: NextFunction): void => {
   try {
     createRoomSchema.parse(req.body);
     next();
@@ -93,11 +73,7 @@ export const validateRoomData = (
   }
 };
 
-export const validateRoomJoinData = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const validateRoomJoinData = (req: Request, res: Response, next: NextFunction): void => {
   try {
     joinRoomSchema.parse(req.body);
     next();
@@ -109,11 +85,7 @@ export const validateRoomJoinData = (
   }
 };
 
-export const validateTemplateData = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const validateTemplateData = (req: Request, res: Response, next: NextFunction): void => {
   try {
     createTemplateSchema.parse(req.body);
     next();
