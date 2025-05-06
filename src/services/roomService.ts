@@ -156,9 +156,11 @@ export const assignTemplatesToPlayers = async ({ roomId, roundId, userId }: Rand
     const round = await Round.findByPk(roundId);
     showError(!round, "RoundNotFound");
   
-    const players = await RoomPlayer.findAll({ where: { roomId } });
+    const players = await RoomPlayer.findAll({ where: { roomId, leftAt: null as any }});
+    showError(!players, 'PlayersNotFound')
 
     const templates = await Template.findAll();
+    showError(!templates, 'TemplatesNotFound')
 
     // Mezclamos aleatoriamente las plantillas
     const shuffledTemplates = templates.sort(() => Math.random() - 0.5);
@@ -200,7 +202,6 @@ export const getTemplateFromUser = async (roundId: string, userId: string): Prom
       include: [Template]
     })
     showError(!templatesUsers, 'AssignedTemplateNotFound')
-    console.log(templatesUsers);
     return templatesUsers!
   } catch (error) {
     (error as Error).name = (error as Error).name || 'AssignedTemplateNotFound'

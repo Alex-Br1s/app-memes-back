@@ -119,6 +119,11 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
     res.status(409).json({ error: "Error starting the room" });
   },
 
+  
+  PlayersNotFound: (res: Response): void => {
+    res.status(409).json({ error: "Players not found" });
+  },
+
   PlayerAlreadyInRoom: (res: Response): void => {
     res.status(409).json({ error: "Player al ready in the room" });
   },
@@ -149,6 +154,10 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
   
 
   //*Errores de template
+  TemplatesNotFound: (res: Response): void => {
+    res.status(404).json({ error: "Templates not found" })
+  },  
+
   AssignedTemplateNotFound: (res: Response): void => {
     res.status(404).json({ error: "No template was assigned to the user" })
   },  

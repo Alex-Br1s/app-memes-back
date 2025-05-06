@@ -102,7 +102,7 @@ export const handleGetTemplateFromUser = async (req: Request, res: Response, nex
     sendResponse({
       res,
       statusCode: 200,
-      message: 'Plantillas de los usuarios obtenida con éxito',
+      message: 'Plantilla obtenida con éxito',
       data: templatesUsers
     })
   } catch (error) {
@@ -110,8 +110,8 @@ export const handleGetTemplateFromUser = async (req: Request, res: Response, nex
   }
 }
 
-//!Token del admin de la sala: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVjNDFkYzk4LWNjYjAtNDQ1YS04Y2EzLWEyMjMwOTlkNzhkNyIsInVzZXJOYW1lIjoiVXNlcjAwMSIsImVtYWlsIjoidXNlcjAwMUBnbWFpbC5jb20iLCJpYXQiOjE3NDY0Nzc0MjksImV4cCI6MTc0NzA4MjIyOX0.pRuShCo3_gv4AiDlXSTc4jJ2dAQM6LDH0XYFLfaBPho
-//!Id del usuario1 que se unió: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkNzY0YjdlLWRmNmUtNDE0ZS1hMTVkLTc2MzJkZDc2ODk1MCIsInVzZXJOYW1lIjoiVXNlcjAwMiIsImVtYWlsIjoidXNlcjAwMkBnbWFpbC5jb20iLCJpYXQiOjE3NDY0Nzc1NzAsImV4cCI6MTc0NzA4MjM3MH0.EE3AJitD_vKt4E9dTsp5cTaF2rjIxZtaCMncqatSjkY
+//!Token del admin de la sala: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjlkYjEyYzg1LWI1NGItNDgyMS04YjU4LTRhZDhlY2E4OTQ3OSIsInVzZXJOYW1lIjoiVXNlcjAwMSIsImVtYWlsIjoidXNlcjAwMUBnbWFpbC5jb20iLCJpYXQiOjE3NDY0ODM2NjMsImV4cCI6MTc0NzA4ODQ2M30.e0y8bLhFM2lKsKC71Q2URC9gatF0EyY12tw700ItwJk
+//!Id del usuario1 que se unió: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIxNTNlMTI5LTRkNWItNDViZC1hNzg2LTEyZjE1MDY4ZjdiMSIsInVzZXJOYW1lIjoiVXNlcjAwMiIsImVtYWlsIjoidXNlcjAwMkBnbWFpbC5jb20iLCJpYXQiOjE3NDY0ODM3NDEsImV4cCI6MTc0NzA4ODU0MX0.yWD-ovf0pDB9RTUCPf5triCVQ3qO0BuyIUlscEHOgdQ
 //!Id del usuario2 que se unió: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRkNGI2NDgyLTdmMzItNGQ2ZC1iZTY2LWYzNWUyODljOTA2NyIsInVzZXJOYW1lIjoiVXNlcjAwMyIsImVtYWlsIjoidXNlcjAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDYyMzA0OTQsImV4cCI6MTc0NjgzNTI5NH0.kcpSk_xr-HLTvfUirNkk2S-aCVoDOAFBbeOpcusq-bo
 //!Id de la sala1: 04ad0b7c-a2b3-4a22-a67d-7f2e5296c36d
-//!Id de la ronda1: a90019c8-af49-4724-8bc6-8020705188a0
+//!Id de la ronda1: 9f8f929d-cebb-401d-83b3-038618a9aee5
