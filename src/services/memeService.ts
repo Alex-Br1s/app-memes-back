@@ -30,7 +30,7 @@ export const createMeme = async ({ texts, roundId, userId }: MemeCreate): Promis
         userId
       }
     })
-    showError(!isPlayerInRoom, 'UserNotInRoom')
+    showError(!isPlayerInRoom, 'PlayerNotInRoom')
 
     const assignedTemplate = await AssignedTemplate.findOne({
       where: {

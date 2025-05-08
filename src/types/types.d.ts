@@ -104,7 +104,7 @@ export interface JoinRoom {
   roomCode?: number | null;
 }
 
-export interface RandomTemplates {
+export interface RequiredIds {
   roomId: string
   roundId: string
   userId: string

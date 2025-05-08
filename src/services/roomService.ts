@@ -1,6 +1,6 @@
 import { CreationAttributes, Op } from "sequelize";
 import { Room } from "../models/room.model";
-import { CreateRoomInterface, JoinRoom, RandomTemplates, RoomWithAdminInterface, StartRoomByAdmin, TemplateFromUsers } from "../types/types";
+import { CreateRoomInterface, JoinRoom, RequiredIds, RoomWithAdminInterface, StartRoomByAdmin, TemplateFromUsers, TemplateInterface } from "../types/types";
 import { User } from "../models/user.model";
 import { RoomPlayer } from "../models/roomPlayer.model";
 import { Round } from "../models/round.model";
@@ -8,6 +8,7 @@ import { Template } from "../models/template.model";
 import { AssignedTemplate } from "../models/assignedTemplate";
 import { io } from "../index";
 import { showError } from "../utils/validateErrors";
+import { Meme } from "../models/meme.model";
 
 
 export const createRoom = async ({ adminId, roomName, roomCode, isPublic, isSpecialRoom, rounds, showUsernames, selectionMode }: CreateRoomInterface): Promise<RoomWithAdminInterface> => {
@@ -143,7 +144,7 @@ export const startRoom = async ({ roomId, userId }: StartRoomByAdmin):Promise<an
   }
 }
 
-export const assignTemplatesToPlayers = async ({ roomId, roundId, userId }: RandomTemplates): Promise<void> => {
+export const assignTemplatesToPlayers = async ({ roomId, roundId, userId }: RequiredIds): Promise<void> => {
   try {
     const room = await Room.findByPk(roomId);
     showError(!room, "RoomNotFound");
@@ -209,3 +210,93 @@ export const getTemplateFromUser = async (roundId: string, userId: string): Prom
   }
 }
 
+
+export const changeAssignedTemplate = async ({roomId, roundId, userId}: RequiredIds):Promise<TemplateInterface> => {
+  try {
+    const room = await Room.findByPk(roomId)
+    showError(!room, 'RoomNotFound')
+    showError(room?.phase !== 'editing', 'RoomOrRoundNotEditing')
+
+    const round = await Round.findByPk(roundId)
+    showError(!round, 'RoundNotFound')
+    showError(round?.status !== 'editing', 'RoomOrRoundNotEditing')
+
+    const player = await RoomPlayer.findOne({
+      where: {
+        roomId,
+        userId,
+        leftAt: null as any
+      }
+    })
+    showError(!player, 'PlayerNotInRoom')
+
+    const user = await User.findByPk(userId)
+    showError(!user, 'UserNotFound')
+
+    if(user?.isPremium !== true) {
+      showError(user?.coins! < 1, 'ThereAreNotEnoughMemecoins')
+
+      await user?.update({coins: user.coins - 1})
+    }
+
+    const currentAssigned = await AssignedTemplate.findOne({
+      where: { roundId, userId }
+    })
+    console.log(currentAssigned);
+    showError(!currentAssigned, 'TemplateNotAssigned')
+
+    const assignedTemplates = await AssignedTemplate.findAll({
+      where: {
+        roundId,
+        userId: {[Op.ne]: userId}
+      }
+    })
+    
+    const usedTemplatesIds = assignedTemplates.map(template => template.templateId)
+    usedTemplatesIds.push(currentAssigned!.templateId)
+
+    const availableTemplates = await Template.findAll({
+      where: {
+        id: {[Op.notIn]: usedTemplatesIds}
+      }
+    })
+    
+    const newTemplate = availableTemplates[Math.floor(Math.random() * availableTemplates.length)]
+
+    await currentAssigned?.update({templateId: newTemplate.id})
+
+    io.to(roomId).emit('template-changed', {
+      userId,
+      newTemplateId: newTemplate.id
+    })
+
+    return newTemplate
+
+  } catch (error) {
+    (error as Error).name = (error as Error).message || 'ErrorChangingTemplate'
+    throw error
+  }
+}
+
+export const memesFromRound = async (roundId: string):Promise<any> => {
+  try {
+    const round = await Round.findByPk(roundId)
+    showError(!round, 'RoundNotFound')
+    const memes = await Meme.findAll({
+      where: {roundId},
+      include: [
+        {
+          model: User,
+          attributes: ['userName', 'coins', 'avatar', 'createdAt']
+        }
+      ]
+    })
+    console.log(memes);
+    showError(memes.length === 0, 'MemesNotFound')
+    
+    return memes
+  } catch (error) {
+    (error as Error).name = (error as Error).message || 'ErrorChangingTemplate'
+    throw error
+  }
+}

@@ -90,7 +90,6 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
 
 
   //* Errores de salas
-
   RoomNotFound: (res: Response): void => {
     res.status(404).json({ error: "Room not found" });
   },
@@ -116,12 +115,21 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
   },
 
   StartRoomError: (res: Response): void => {
-    res.status(409).json({ error: "Error starting the room" });
+    res.status(404).json({ error: "Error starting the room" });
   },
+
+  RoomNotInAssigningPhase: (res: Response): void => {
+    res.status(404).json({ error: "The room is not in the template assignment phase." });
+  },
+
 
   
   PlayersNotFound: (res: Response): void => {
-    res.status(409).json({ error: "Players not found" });
+    res.status(404).json({ error: "Players not found" });
+  },
+
+  PlayerNotInRoom: (res: Response): void => {
+    res.status(404).json({ error: "The player is not in the room" });
   },
 
   PlayerAlreadyInRoom: (res: Response): void => {
@@ -129,15 +137,11 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
   },
 
   MinimumTwoPlayersToStartRoom: (res: Response): void => {
-    res.status(409).json({ error: "A minimum of 2 players are required to start playing" });
+    res.status(404).json({ error: "A minimum of 2 players are required to start playing" });
   },
 
   ErrorJoiningRoom: (res: Response): void => {
-    res.status(409).json({ error: "Error joining room" });
-  },
-
-  UserNotInRoom: (res: Response): void => {
-    res.status(400).json({ error: "The user is not in the room" })
+    res.status(404).json({ error: "Error joining room" });
   },
 
   RoomCodeNotValid: (res: Response): void => {
@@ -159,8 +163,21 @@ const ERROR_HANDLERS: Record<string, (res: Response, error: Error) => void> = {
   },  
 
   AssignedTemplateNotFound: (res: Response): void => {
-    res.status(404).json({ error: "No template was assigned to the user" })
+    res.status(404).json({ error: "No template was assigned to the player" })
   },  
+
+  TemplateNotAssigned: (res: Response): void => {
+    res.status(404).json({ error: "Template not assigned to the player" })
+  },
+
+  ErrorChangingTemplate: (res: Response): void => {
+    res.status(404).json({ error: "Template not assigned to the player" })
+  },  
+  
+  ThereAreNotEnoughMemecoins: (res: Response): void => {
+    res.status(404).json({ error: "You don't have enough memecoins to change the template." })
+  },  
+
 
   defaultError: (res: Response, error: Error): void => {
     console.error('Unhandled error:', error.name);

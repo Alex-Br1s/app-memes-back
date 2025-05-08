@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleCreateRoom, handleAssignTemplatesToPlayers, handleJoinRoom, handleStartRoom, handleGetTemplateFromUser } from "../handlers/roomHandler";
+import { handleCreateRoom, handleAssignTemplatesToPlayers, handleJoinRoom, handleStartRoom, handleGetTemplateFromUser, handleChangeAssignedTemplate, handleMemesFromRound } from "../handlers/roomHandler";
 import { authenticateToken } from "../middlewares/authenticateToken";
 import { validateRoomData, validateRoomJoinData } from "../middlewares/validateData";
 
@@ -24,5 +24,13 @@ roomRoutes.post("/room/:roomId/:roundId/assign-templates", authenticateToken, (r
 roomRoutes.get("/room/:roundId/template-user", authenticateToken, (req, res, next) => {
   handleGetTemplateFromUser(req, res, next).catch(next)
 })
+
+roomRoutes.post("/room/:roomId/:roundId/change-template", authenticateToken, (req, res, next) => {
+  handleChangeAssignedTemplate(req, res, next).catch(next)
+})
+
+roomRoutes.get("/room/:roundId/memes", authenticateToken, (req, res, next) => {
+  handleMemesFromRound(req, res, next).catch(next)
+}) 
 
 export default roomRoutes;

@@ -32,6 +32,12 @@ export class User extends Model<User> {
   password!: string;  
 
   @Column({
+    type: DataType.INTEGER,
+    defaultValue: 3
+  })
+  coins!: number
+
+  @Column({
     type: DataType.BOOLEAN,
     defaultValue: false
   })

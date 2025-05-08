@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { createRoom, assignTemplatesToPlayers, joinRoom, startRoom, getTemplateFromUser } from "../services/roomService";
+import { createRoom, assignTemplatesToPlayers, joinRoom, startRoom, getTemplateFromUser, changeAssignedTemplate, memesFromRound } from "../services/roomService";
 import { sendResponse } from "../utils/sendResponse";
 import { showError } from "../utils/validateErrors";
 
@@ -110,8 +110,48 @@ export const handleGetTemplateFromUser = async (req: Request, res: Response, nex
   }
 }
 
-//!Token del admin de la sala: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjlkYjEyYzg1LWI1NGItNDgyMS04YjU4LTRhZDhlY2E4OTQ3OSIsInVzZXJOYW1lIjoiVXNlcjAwMSIsImVtYWlsIjoidXNlcjAwMUBnbWFpbC5jb20iLCJpYXQiOjE3NDY0ODM2NjMsImV4cCI6MTc0NzA4ODQ2M30.e0y8bLhFM2lKsKC71Q2URC9gatF0EyY12tw700ItwJk
-//!Id del usuario1 que se unió: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIxNTNlMTI5LTRkNWItNDViZC1hNzg2LTEyZjE1MDY4ZjdiMSIsInVzZXJOYW1lIjoiVXNlcjAwMiIsImVtYWlsIjoidXNlcjAwMkBnbWFpbC5jb20iLCJpYXQiOjE3NDY0ODM3NDEsImV4cCI6MTc0NzA4ODU0MX0.yWD-ovf0pDB9RTUCPf5triCVQ3qO0BuyIUlscEHOgdQ
-//!Id del usuario2 que se unió: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRkNGI2NDgyLTdmMzItNGQ2ZC1iZTY2LWYzNWUyODljOTA2NyIsInVzZXJOYW1lIjoiVXNlcjAwMyIsImVtYWlsIjoidXNlcjAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDYyMzA0OTQsImV4cCI6MTc0NjgzNTI5NH0.kcpSk_xr-HLTvfUirNkk2S-aCVoDOAFBbeOpcusq-bo
-//!Id de la sala1: 04ad0b7c-a2b3-4a22-a67d-7f2e5296c36d
-//!Id de la ronda1: 9f8f929d-cebb-401d-83b3-038618a9aee5
+export const handleChangeAssignedTemplate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { roomId, roundId } = req.params
+    const userId = req.user!.id
+    console.log(userId);
+    showError(!userId, 'UserNotFound')
+
+    const newPlayerTemplate = await changeAssignedTemplate({ roomId, roundId, userId: userId!  })
+
+    sendResponse({
+      res,
+      statusCode: 200,
+      message: 'Plantilla cambiada!',
+      data: newPlayerTemplate
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+export const handleMemesFromRound = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const {roundId} = req.params
+    console.log(roundId);
+    const memes = await memesFromRound(roundId)
+
+    sendResponse({
+      res,
+      statusCode: 200,
+      message: 'Memes obtenidos con éxito',
+      data: memes
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+//!Token del admin de la sala: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJkYjAwMmZlLTc0NmQtNDYyZi05MTEyLTc4NzliY2E0ZjMxZiIsInVzZXJOYW1lIjoiVXNlcjAwMSIsImVtYWlsIjoidXNlcjAwMUBnbWFpbC5jb20iLCJpYXQiOjE3NDY2MzM4NDAsImV4cCI6MTc0NzIzODY0MH0.usuA1FimbvtQBNSgPyOAmrEVeSMmsAGVI4zYBpFLtUY
+//!Id del usuario1 que se unió: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJjYjQ3N2MzLTk2NWMtNGFiYi04MjdhLTJmNjkwMTM2ZTgyMCIsInVzZXJOYW1lIjoiVXNlcjAwMiIsImVtYWlsIjoidXNlcjAwMkBnbWFpbC5jb20iLCJpYXQiOjE3NDY2MzQxNTYsImV4cCI6MTc0NzIzODk1Nn0.BRj3fBh55GyPHahx8f0xL5Q_Z0JWXqPx2PEjB52zwEw
+//!Id del usuario2 que se unió: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcyNWMwNWQ4LWMwNzUtNDkzNS1hYWJhLWUyOWE0NzIwMWVjZCIsInVzZXJOYW1lIjoiVXNlcjAwMyIsImVtYWlsIjoidXNlcjAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDY2MjgxNTgsImV4cCI6MTc0NzIzMjk1OH0.Ny5nE7yk38kqvuxOuuF5w1lvBsCa1WsHVaQmZydchYc
+//!Id de la sala1: 3db84440-db3d-4878-8162-7147ec5f47bf
+//!Id de la ronda1: 43a83ad1-1473-4bc6-8ed3-f0fa50d8058c
